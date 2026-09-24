@@ -10,7 +10,7 @@ Ask it things like *"Is the Python requests library still maintained, or should 
 
 Built for the [SerpApi India Hackathon 2026](https://serpapi.github.io/serpapi-india-hackathon-2026/), AI Agents track.
 
-**Demo video (1:52):** https://youtu.be/7EF9pnAYh-I - a live run of the requests-vs-httpx question in the web UI, then the CLI budget check and the test suite.
+**Demo video (2:15):** https://youtu.be/fIdvJJa5g9Q - a live run of the requests-vs-httpx question in the web UI: the second research round, deep-read claim checks, the side-by-side comparison table with Google Trends interest, then the CLI credit check, the eval and the test suite.
 
 ---
 
