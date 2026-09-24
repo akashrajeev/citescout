@@ -28,8 +28,10 @@ def _trace(event: str, data: dict) -> None:
             recent = " [dim](past year)[/dim]" if s["recent_only"] else ""
             console.print(f"  [magenta]{s['engine']:<14}[/magenta] {s['query']}{recent}\n  {'':14} [dim]{s['purpose']}[/dim]")
     elif event == "search.done":
-        status = f"[red]{data['error']}[/red]" if data["error"] else f"{data['results']} results"
-        console.print(f"  [green]✓[/green] {data['engine']:<14} {status}")
+        if data["error"]:
+            console.print(f"  [red]✗[/red] {data['engine']:<14} [red]{data['error']}[/red]")
+        else:
+            console.print(f"  [green]✓[/green] {data['engine']:<14} {data['results']} results")
     elif event == "verify.done":
         for f in data["facts"]:
             bits = [f.get("latest_version") and f"latest {f['latest_version']}",
