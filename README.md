@@ -23,21 +23,34 @@ Asking a chatbot "is X still maintained?" gets you a confident answer from train
 $ citescout ask "Is the Python requests library still maintained, or should I switch to httpx?"
 Planning research for: Is the Python requests library still maintained, or should I switch to httpx?
   intent=maintenance  subjects=requests (psf/requests), httpx (encode/httpx)
-  google         site:github.com psf requests releases (past year)
-  google_news    Python requests library maintenance (past year)
-  google         requests vs httpx comparison (past year)
-  ...
+  google         psf/requests releases site:github.com (past year)
+                 official release notes and recent commit activity for requests
+  google         encode/httpx releases site:github.com (past year)
+                 official release notes and recent commit activity for httpx
+  google         requests library maintenance status 2026 (past year)
+                 determine if the Python requests library is still actively maintained
+  google         httpx vs requests Python (past year)
+                 compare features, performance, and community preference between httpx and requests
+  google_news    Python requests library news 2026 (past year)
+                 find any recent news about deprecation, security incidents, or major announcements
+  google         psf/requests issues site:github.com (past year)
+                 review recent open and closed issues to gauge maintenance activity
+  ✓ google         6 results
+  ✓ google         6 results
+  ✓ google         6 results
   ✓ google         6 results
   ✓ google_news    6 results
+  ✓ google         6 results
   ✓ pypi           requests: latest 2.34.2, released 2026-05-14
   ✓ github         psf/requests: latest v2.34.2, released 2026-05-14, last push 2026-09-21
   ✓ pypi           httpx: latest 0.28.1, released 2024-12-06
   ✓ github         encode/httpx: latest 0.28.1, released 2024-12-06, last push 2026-03-29
-Cross-checking 20 sources...
+  dropped 13 off-topic result(s) that never mention the subject
+Cross-checking 24 sources...
   8 claims, 1 disagreement(s), 0 uncited claim(s) dropped
 ```
 
-followed by the verdict, a claims table with confidence and sources, a **Sources disagree** panel, and the evidence table. Full example briefs (Markdown, with every link) are in [`examples/`](examples/).
+followed by the verdict, a claims table with confidence and sources, a **Sources disagree** panel, and the evidence table. Full example briefs (Markdown, with every link) are in [`examples/`](examples/): [requests vs httpx](examples/requests-vs-httpx.md), [moment.js alternatives](examples/momentjs-alternatives.md).
 
 There is also a local web UI (`citescout-web`) that streams the agent's steps live and renders the brief with clickable citations.
 

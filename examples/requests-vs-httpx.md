@@ -1,35 +1,30 @@
 # Is the Python requests library still maintained, or should I switch to httpx?
 
-**Verdict:** Requests is still actively maintained – its latest release 2.34.2 came out on 2026‑05‑14 and the repository had a push on 2026‑09‑21 – and it has addressed recent security issues such as CVE‑2026‑25645 in 2.33.0. However, httpx is also actively developed (0.28.1 in 2024‑12‑06 and httpx2 in 2026‑05‑12) and offers modern features like async support and HTTP/2, which can be advantageous for high‑performance or concurrent workloads. Depending on whether you need those features, you may keep using Requests or migrate to httpx.
+**Verdict:** Requests is still actively maintained – its latest release (2.34.2) came out in May 2026 and the repository shows commits as recent as September 2026 [E21](https://pypi.org/project/requests/)[E22](https://github.com/psf/requests) – while httpx is also maintained but its newest version (0.28.1) dates to December 2024 with the last push in March 2026 [E23](https://pypi.org/project/httpx/)[E24](https://github.com/encode/httpx); you can keep using Requests, but httpx may be worth switching to for async or HTTP/2 features.
 
 ## Claims
 
-- **high** - Requests’ latest stable release is 2.34.2, released 2026‑05‑14. ([E21](https://pypi.org/project/requests/)) _1 independent domain(s), includes live registry data_
-- **medium** - The Requests repository had a push on 2026‑09‑21, indicating ongoing maintenance. ([E22](https://github.com/psf/requests)) _1 independent domain(s), includes live registry data_
-- **medium** - Requests fixed CVE‑2026‑25645 in version 2.33.0, showing active security patching. ([E5](https://github.com/advisories/GHSA-gc5v-m9x4-r6x2), [E8](https://www.sentinelone.com/vulnerability-database/cve-2026-25645/)) _2 independent domain(s)_
-- **high** - httpx’s latest stable release is 0.28.1 (2024‑12‑06) and the httpx2 branch released 2026‑05‑12. ([E23](https://pypi.org/project/httpx/), [E24](https://github.com/encode/httpx), [E7](https://github.com/PrefectHQ/fastmcp/issues/4278)) _2 independent domain(s), includes live registry data_
-- **low** - httpx supports both synchronous and asynchronous APIs, whereas Requests is synchronous only. ([E11](https://ai.plainenglish.io/python-requests-vs-httpx-vs-aiohttp-i-benchmarked-all-3-on-real-traffic-77eb20545476), [E12](https://towardsdatascience.com/beyond-requests-why-httpx-is-the-modern-http-client-you-need-sometimes/), [E13](https://blog.stackademic.com/python-requests-vs-httpx-vs-aiohttp-i-benchmarked-all-3-on-real-traffic-b1987e9ab624)) _3 independent domain(s)_
-- **low** - httpx can natively handle HTTP/2, offering potential performance benefits over Requests. ([E12](https://towardsdatascience.com/beyond-requests-why-httpx-is-the-modern-http-client-you-need-sometimes/)) _1 independent domain(s)_
-- **low** - Requests remains the most mature and widely used HTTP client, suitable for simple tasks and legacy code. ([E10](https://iproyal.com/blog/best-python-http-clients/)) _1 independent domain(s)_
+- **high** - The requests library’s latest release is version 2.34.2, published on 2026‑05‑14. ([E21](https://pypi.org/project/requests/), [E22](https://github.com/psf/requests)) _2 independent domain(s), includes live registry data_
+- **medium** - The requests GitHub repository is not archived and received a code push on 2026‑09‑21, indicating ongoing development. ([E22](https://github.com/psf/requests)) _1 independent domain(s), includes live registry data_
+- **medium** - A security vulnerability (CVE‑2026‑25645) was patched in requests 2.33.0, and the current version includes the fix. ([E5](https://github.com/advisories/GHSA-gc5v-m9x4-r6x2), [E8](https://www.sentinelone.com/vulnerability-database/cve-2026-25645/)) _2 independent domain(s)_
+- **high** - The httpx library’s latest release is version 0.28.1, published on 2024‑12‑06, with the most recent commit on 2026‑03‑29. ([E23](https://pypi.org/project/httpx/), [E24](https://github.com/encode/httpx)) _2 independent domain(s), includes live registry data_
+- **low** - Community articles highlight httpx’s async support and HTTP/2 capabilities as modern advantages over requests. ([E11](https://ai.plainenglish.io/python-requests-vs-httpx-vs-aiohttp-i-benchmarked-all-3-on-real-traffic-77eb20545476), [E12](https://towardsdatascience.com/beyond-requests-why-httpx-is-the-modern-http-client-you-need-sometimes/), [E13](https://blog.stackademic.com/python-requests-vs-httpx-vs-aiohttp-i-benchmarked-all-3-on-real-traffic-b1987e9ab624)) _3 independent domain(s)_
+- **high** - Some commentary claims requests is “frozen,” but repository activity shows it is still being maintained. ([E16](https://www.reddit.com/r/Python/comments/1q6d1k5/niquests_316_bringing_uvlike_performance_leaps_to/), [E22](https://github.com/psf/requests)) _2 independent domain(s), includes live registry data_
+- **medium** - Recent issues discuss dependency warnings (e.g., chardet version incompatibility), demonstrating active issue handling. ([E3](https://github.com/psf/requests/issues/7219), [E4](https://github.com/psf/requests/issues/7223), [E19](https://github.com/psf/requests/issues/7222)) _1 independent domain(s)_
+- **low** - Comparative reviews note requests’ maturity but recommend httpx for high‑concurrency or async workloads. ([E10](https://iproyal.com/blog/best-python-http-clients/), [E15](https://scrapfly.io/blog/answers/httpx-vs-requests-vs-aiohttp)) _2 independent domain(s)_
 
 ## Sources disagree
 
-- **Maintenance status of Requests** (model)
-  - Requests has been frozen and is no longer maintained [E16](https://www.reddit.com/r/Python/comments/1q6d1k5/niquests_316_bringing_uvlike_performance_leaps_to/)
-  - Requests is actively maintained with recent commits and releases [E22](https://github.com/psf/requests)
-  - Resolution: The newer evidence (E22) shows active maintenance, so the frozen claim is outdated.
-- **Is httpx v2 out?** (rule)
-  - github.com mentions v2 [E7](https://github.com/PrefectHQ/fastmcp/issues/4278)
-  - pypi still marks 0.28.1 as the latest release [E23](https://pypi.org/project/httpx/)
-  - Resolution: v2 is probably a pre-release or not yet the default install; a plain install gives 0.28.1.
-- **Is encode/httpx v2 out?** (rule)
-  - github.com mentions v2 [E7](https://github.com/PrefectHQ/fastmcp/issues/4278)
-  - github still marks 0.28.1 as the latest release [E24](https://github.com/encode/httpx)
-  - Resolution: v2 is probably a pre-release or not yet the default install; a plain install gives 0.28.1.
+- **maintenance status of requests** (model)
+  - Requests is frozen – no further development [E16](https://www.reddit.com/r/Python/comments/1q6d1k5/niquests_316_bringing_uvlike_performance_leaps_to/)
+  - Requests shows recent releases and commits, indicating active maintenance [E22](https://github.com/psf/requests)
+  - Resolution: The newer, live‑API evidence (E22) shows active development, outweighing the older opinion piece.
 
 ## Open questions
 
-- Whether httpx fully supports all legacy Requests features such as session hooks, custom authentication, and cookie handling.
+- What performance differences do requests and httpx exhibit in specific high‑concurrency or async scenarios?
+- What is the effort and risk involved in migrating an existing codebase from requests to httpx?
+- How do the two libraries compare in terms of long‑term roadmap and community support beyond 2026?
 
 ## Evidence
 
@@ -60,4 +55,4 @@
 | E23 | package_registry | live API | 2024-12-06 | [PYPI record for httpx](https://pypi.org/project/httpx/) |
 | E24 | repository | live API | 2024-12-06 | [GITHUB record for encode/httpx](https://github.com/encode/httpx) |
 
-_SerpApi searches: 5 live, 1 cached. Model: openai/gpt-oss-20b. Generated 2026-09-24 11:49 UTC by citescout._
+_SerpApi searches: 0 live, 6 cached. Model: openai/gpt-oss-120b. Generated 2026-09-24 11:50 UTC by citescout._

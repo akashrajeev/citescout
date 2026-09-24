@@ -1,46 +1,30 @@
 # Is moment.js still maintained, or should I move to date-fns or Day.js?
 
-**Verdict:** Moment.js still receives releases (v2.31.0 on 2026‑09‑15) and its repository is active, so it is technically maintained, but recent articles label it deprecated and recommend switching to date‑fns or Day.js for new projects [E21](https://www.npmjs.com/package/moment)[E22](https://github.com/moment/moment)[E13](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026)
+**Verdict:** Moment.js is still actively maintained, with its latest release 2.31.0 on 2026‑09‑15, but many developers are migrating to lighter, tree‑shakeable alternatives like date‑fns or Day.js for smaller bundle sizes and modern APIs.[E21](https://www.npmjs.com/package/moment)[E22](https://github.com/moment/moment)
 
 ## Claims
 
-- **high** - Moment.js released version 2.31.0 on 2026‑09‑15, showing recent activity ([E21](https://www.npmjs.com/package/moment), [E22](https://github.com/moment/moment)) _2 independent domain(s), includes live registry data_
-- **medium** - The Moment.js GitHub repository is not archived and had its last push on 2026‑09‑15 ([E22](https://github.com/moment/moment)) _1 independent domain(s), includes live registry data_
-- **medium** - Moment Timezone was updated to include tzdb 2026b in version 0.6.2 ([E6](https://github.com/moment/moment-timezone/issues/1141)) _1 independent domain(s)_
-- **medium** - Moment.js has reported test failures in Debian unstable (issue #1138) ([E2](https://github.com/moment/moment-timezone/issues/1138)) _1 independent domain(s)_
-- **medium** - A security‑related issue highlighted an inefficient parsing algorithm in Moment.js ([E7](https://github.com/xiaoymin/knife4j/issues/984)) _1 independent domain(s)_
-- **low** - Recent comparative articles describe Moment.js as deprecated and suggest Day.js or date‑fns for new code ([E8](https://reintech.io/blog/date-fns-vs-dayjs-vs-luxon-comparison-2026), [E13](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026)) _2 independent domain(s)_
-- **high** - Day.js is actively maintained with version 1.11.23 released 2026‑08‑17 ([E14](https://www.npmjs.com/package/dayjs), [E25](https://www.npmjs.com/package/dayjs)) _1 independent domain(s), includes live registry data_
-- **high** - date‑fns is actively maintained with version 4.4.0 released 2026‑05‑29 and recent commits in September ([E23](https://www.npmjs.com/package/date-fns), [E24](https://github.com/date-fns/date-fns)) _2 independent domain(s), includes live registry data_
+- **high** - Moment.js latest version is 2.31.0 released on 2026‑09‑15. ([E21](https://www.npmjs.com/package/moment), [E22](https://github.com/moment/moment)) _2 independent domain(s), includes live registry data_
+- **medium** - The Moment.js GitHub repository is not archived and has recent pushes, indicating ongoing maintenance. ([E22](https://github.com/moment/moment)) _1 independent domain(s), includes live registry data_
+- **high** - date‑fns latest version is 4.4.0 released on 2026‑05‑29. ([E23](https://www.npmjs.com/package/date-fns), [E24](https://github.com/date-fns/date-fns)) _2 independent domain(s), includes live registry data_
+- **high** - Day.js latest version is 1.11.23 released on 2026‑08‑17. ([E14](https://www.npmjs.com/package/dayjs), [E25](https://www.npmjs.com/package/dayjs)) _1 independent domain(s), includes live registry data_
+- **medium** - Moment.js has a known inefficient parsing bug affecting RFC2822 strings. ([E7](https://github.com/xiaoymin/knife4j/issues/984)) _1 independent domain(s)_
+- **low** - A migration guide from Moment.js to date‑fns exists, showing community support for the shift. ([E10](https://www.pkgpulse.com/guides/how-to-migrate-momentjs-to-date-fns)) _1 independent domain(s)_
+- **low** - Day.js offers a 2KB lightweight alternative with a similar API and faster performance. ([E8](https://reintech.io/blog/date-fns-vs-dayjs-vs-luxon-comparison-2026), [E11](https://generalistprogrammer.com/comparisons/moment-vs-dayjs)) _2 independent domain(s)_
+- **low** - Several comparison articles note that Moment.js is deprecated in favor of date‑fns or Day.js for tree‑shakeable or smaller bundles. ([E8](https://reintech.io/blog/date-fns-vs-dayjs-vs-luxon-comparison-2026), [E9](https://www.pkgpulse.com/guides/best-javascript-date-libraries-2026), [E13](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026)) _2 independent domain(s)_
 
 ## Sources disagree
 
-- **Maintenance status of Moment.js** (model)
-  - Moment.js has recent releases and active repo indicating it is maintained [E21](https://www.npmjs.com/package/moment)[E22](https://github.com/moment/moment)
-  - Community articles label Moment.js as deprecated and advise migration [E13](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026)
-  - Resolution: Newer registry and repo data (E21/E22) confirm active maintenance; the 'deprecated' label reflects community recommendation rather than lack of updates
-- **Stability of Moment.js ecosystem** (model)
-  - Test failures reported in Debian indicate broken builds [E2](https://github.com/moment/moment-timezone/issues/1138)
-  - Moment Timezone continues to receive updates, showing active fixes [E6](https://github.com/moment/moment-timezone/issues/1141)
-  - Resolution: Later evidence (E6) shows ongoing maintenance that addresses issues like those in E2
-- **Is moment v4 out?** (rule)
-  - www.pkgpulse.com mentions v4 [E13](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026)
-  - npm still marks 2.31.0 as the latest release [E21](https://www.npmjs.com/package/moment)
-  - Resolution: v4 is probably a pre-release or not yet the default install; a plain install gives 2.31.0.
 - **Is moment still maintained?** (rule)
   - www.pkgpulse.com calls it 'is deprecated' [E13](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026)
   - npm shows activity on 2026-09-15 [E21](https://www.npmjs.com/package/moment)
   - Resolution: Check what the page refers to: it may describe an old major version, a sub-module, or be outdated.
-- **Is moment/moment v4 out?** (rule)
-  - www.pkgpulse.com mentions v4 [E13](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026)
-  - github still marks 2.31.0 as the latest release [E22](https://github.com/moment/moment)
-  - Resolution: v4 is probably a pre-release or not yet the default install; a plain install gives 2.31.0.
 
 ## Open questions
 
-- Will Moment.js receive major new features or eventually be phased out despite recent releases?
-- How do bundle size and runtime performance of Moment.js compare to Day.js and date‑fns in typical applications?
-- What is the long‑term support roadmap for Moment Timezone and its compatibility with future tzdb releases?
+- What is the long‑term sustainability plan for Moment.js beyond 2026?
+- How will the upcoming JavaScript Temporal API affect the relevance of Moment.js, date‑fns, and Day.js?
+- What are the performance trade‑offs in specific high‑frequency date operations between these libraries?
 
 ## Evidence
 
@@ -72,4 +56,4 @@
 | E24 | repository | live API | 2026-05-29 | [GITHUB record for date-fns/date-fns](https://github.com/date-fns/date-fns) |
 | E25 | package_registry | live API | 2026-08-17 | [NPM record for dayjs](https://www.npmjs.com/package/dayjs) |
 
-_SerpApi searches: 5 live, 1 cached. Model: openai/gpt-oss-120b. Generated 2026-09-24 11:50 UTC by citescout._
+_SerpApi searches: 0 live, 6 cached. Model: openai/gpt-oss-20b. Generated 2026-09-24 11:50 UTC by citescout._
