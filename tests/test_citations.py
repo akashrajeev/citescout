@@ -87,3 +87,9 @@ def test_version_ahead_rule_ignores_third_party_pages():
     fact = RegistryFact(subject="httpx", source="pypi", url=reg.url, latest_version="0.28.1",
                         latest_release=now, evidence_id="E2")
     assert rule_contradictions(web + [reg], [fact]) == []
+
+
+def test_citation_markers_are_normalized():
+    raw = {"verdict": "Upgrade now (E1,E2) and see 【E3】 [E1][E2].", "claims": [{"text": "x", "citations": ["E1"]}]}
+    verdict, *_ = validate(raw, EVIDENCE)
+    assert verdict == "Upgrade now [E1, E2] and see [E3] [E1, E2]."

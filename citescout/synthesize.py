@@ -108,8 +108,15 @@ def validate(raw: dict, evidence: list[Evidence]) -> tuple[str, list[Claim], lis
     return verdict, claims, contradictions, open_q, dropped
 
 
+def _normalize_markers(text: str) -> str:
+    """Models sometimes write (E3, E4) or 【E3】 instead of [E3, E4]; bring them to one form."""
+    text = re.sub(r"[(【]\s*(E\d+(?:\s*[,;]\s*E\d+)*)\s*[)】]", lambda m: "[" + re.sub(r"\s*[,;]\s*", ", ", m.group(1)) + "]", text)
+    return re.sub(r"\]\[", ", ", text)
+
+
 def _strip_bad_ids(text: str, valid: set[str]) -> str:
     """Remove citation markers that point at nothing, e.g. a hallucinated [E99]."""
+    text = _normalize_markers(text)
     def repl(m: re.Match[str]) -> str:
         ids = [i for i in _ID_RE.findall(m.group(0)) if i in valid]
         return f"[{', '.join(ids)}]" if ids else ""
