@@ -29,11 +29,22 @@ Rules:
   the repo) and at least one aimed at independent sources (news, issues, forums), so
   answers can be cross-checked.
 - Set recent_only=true when freshness matters (maintenance, latest version, current status).
+- Today is {today}. Never put an old year in a query; if you need a year, use the current one,
+  or better, rely on recent_only.
+- site: takes a bare domain only (site:github.com psf/requests releases), never a path such as
+  site:github.com/psf/requests/releases - path-scoped queries usually return nothing.
+- Always include the library name AND its language/ecosystem in news queries
+  ("Python requests library"), because plain words like "requests" match unrelated news.
+- Write queries the way a person types into Google. Do not use GitHub search syntax such as
+  "is:open" inside a Google query.
 - Use at most {max_searches} searches."""
 
 
 def make_plan(llm: LLM, question: str, max_searches: int) -> Plan:
-    raw = llm.json(SYSTEM.replace("{max_searches}", str(max_searches)), f"Question: {question}")
+    from datetime import date
+
+    system = SYSTEM.replace("{max_searches}", str(max_searches)).replace("{today}", date.today().isoformat())
+    raw = llm.json(system, f"Question: {question}")
     return sanitize(raw, question, max_searches)
 
 

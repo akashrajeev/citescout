@@ -186,7 +186,7 @@ def normalize(task: SearchTask, data: dict[str, Any], id_start: int) -> list[Evi
         if box.get("link") and (box.get("snippet") or box.get("answer")):
             out.append(_ev(i, task, box["link"], box.get("title", ""), box.get("snippet") or box.get("answer"), rank=0))
             i += 1
-        for r in (data.get("organic_results") or [])[:8]:
+        for r in (data.get("organic_results") or [])[:6]:
             if not r.get("link"):
                 continue
             out.append(_ev(i, task, r["link"], r.get("title", ""), r.get("snippet", ""),
@@ -200,7 +200,7 @@ def normalize(task: SearchTask, data: dict[str, Any], id_start: int) -> list[Evi
             items.append(r)
             items.extend((r.get("highlight") and [r["highlight"]]) or [])
             items.extend(r.get("stories") or [])
-        for r in items[:8]:
+        for r in items[:6]:
             if not r.get("link"):
                 continue
             src = r.get("source") or {}

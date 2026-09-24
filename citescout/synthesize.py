@@ -26,9 +26,15 @@ Return JSON:
  "open_questions": ["what the evidence could not settle"]
 }
 Rules:
-- 4 to 8 claims. Prefer claims backed by more than one independent source.
-- Registry facts (source_type package_registry / repository, engine null) are read from the
-  live PyPI/npm/GitHub APIs and beat any web page on versions and dates.
+- Today is {today}.
+- 5 to 8 claims. Prefer claims backed by more than one independent source.
+- Most claims must cite web evidence (rows where engine is not null): what the docs, release
+  notes, issues, news and discussions actually say. The question is usually about more than
+  version numbers - cover the substance (features, migration cost, known problems, who uses what).
+- Registry facts (engine null) are read from the live PyPI/npm/GitHub APIs and beat any web
+  page on versions and dates. Use them to confirm or correct web claims, citing both.
+- Only state things the evidence says. No claims about the absence of evidence
+  ("no evidence shows..."); put gaps in open_questions instead.
 - A contradiction is when two sources disagree on a fact (a version, a date, whether a
   project is maintained or deprecated, whether a bug is fixed). Report every one you find.
   Do not invent disagreements.
@@ -53,9 +59,11 @@ def evidence_block(evidence: list[Evidence]) -> str:
 _ID_RE = re.compile(r"\bE\d+\b")
 
 
-def synthesize(llm: LLM, question: str, evidence: list[Evidence]) -> dict:
-    user = f"Question: {question}\n\nEvidence:\n{evidence_block(evidence)}"
-    return llm.json(SYSTEM, user, temperature=0.1)
+def synthesize(llm: LLM, question: str, evidence: list[Evidence], nudge: str = "") -> dict:
+    from datetime import date
+
+    user = f"Question: {question}\n\nEvidence:\n{evidence_block(evidence)}{nudge}"
+    return llm.json(SYSTEM.replace("{today}", date.today().isoformat()), user, temperature=0.1)
 
 
 def validate(raw: dict, evidence: list[Evidence]) -> tuple[str, list[Claim], list[Contradiction], list[str], int]:

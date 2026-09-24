@@ -36,8 +36,12 @@ def _trace(event: str, data: dict) -> None:
                     f.get("latest_release") and f"released {f['latest_release'][:10]}",
                     f.get("archived") and "ARCHIVED", f.get("last_push") and f"last push {f['last_push'][:10]}"]
             console.print(f"  [green]✓[/green] {f['source']:<14} {f['subject']}: " + ", ".join(b for b in bits if b))
+    elif event == "filter.done":
+        console.print(f"  [dim]dropped {data['dropped']} off-topic result(s) that never mention the subject[/dim]")
     elif event == "synthesize.start":
         console.print(f"[bold]Cross-checking[/bold] {data['evidence']} sources...")
+    elif event == "synthesize.retry":
+        console.print(f"  [yellow]retrying synthesis:[/yellow] {data['reason']}")
     elif event == "synthesize.done":
         console.print(f"  {data['claims']} claims, {data['contradictions']} disagreement(s), "
                       f"{data['dropped']} uncited claim(s) dropped\n")
