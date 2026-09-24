@@ -16,7 +16,7 @@ from citescout.config import Settings
 from citescout.llm import LLM
 from citescout.models import Brief, Evidence, SearchTask
 from citescout.planner import make_plan
-from citescout.serp import BudgetExceeded, SerpSearcher
+from citescout.serp import SerpSearcher
 from citescout.synthesize import registry_evidence, synthesize, validate
 
 Trace = Callable[[str, dict[str, Any]], None]
@@ -74,8 +74,17 @@ class ResearchAgent:
         def run_one(task: SearchTask) -> tuple[SearchTask, list[Evidence], str | None]:
             try:
                 return task, self.searcher.run(task, 1), None
-            except (BudgetExceeded, FileNotFoundError, RuntimeError) as e:
+            except RuntimeError as e:
+                # Google found nothing inside the past-year window: widen once, if budget allows.
+                if task.recent_only and "hasn't returned any results" in str(e):
+                    try:
+                        wider = task.model_copy(update={"recent_only": False})
+                        return wider, self.searcher.run(wider, 1), None
+                    except Exception as e2:  # noqa: BLE001 - reported in the trace
+                        return task, [], str(e2)
                 return task, [], str(e)
+            except Exception as e:  # noqa: BLE001 - network/timeout/budget: skip this search
+                return task, [], f"{type(e).__name__}: {e}"[:160]
 
         raw: list[Evidence] = []
         with ThreadPoolExecutor(max_workers=4) as pool:

@@ -56,7 +56,7 @@ def sanitize(raw: dict, question: str, max_searches: int) -> Plan:
             engine = Engine(str(s.get("engine", "google")).strip())
         except ValueError:
             engine = Engine.GOOGLE
-        query = " ".join(str(s.get("query", "")).split())
+        query = _fix_site(" ".join(str(s.get("query", "")).split()))
         if not query:
             continue
         key = (engine.value, query.lower())
@@ -77,6 +77,14 @@ def sanitize(raw: dict, question: str, max_searches: int) -> Plan:
             subjects.append(Subject(name=str(sub["name"]).strip(), ecosystem=sub.get("ecosystem"), repo=repo))
     return Plan(intent=str(raw.get("intent", "general")), subjects=subjects[:4],
                 searches=searches[:max_searches], rationale=str(raw.get("rationale", ""))[:500])
+
+
+_SITE_PATH = __import__("re").compile(r"site:([\w.-]+)/(\S+)")
+
+
+def _fix_site(query: str) -> str:
+    """site:github.com/psf/requests -> site:github.com psf/requests (paths rarely match)."""
+    return _SITE_PATH.sub(lambda m: f"site:{m.group(1)} {m.group(2).replace('/', ' ')}", query)
 
 
 def fallback_searches(question: str) -> list[SearchTask]:
