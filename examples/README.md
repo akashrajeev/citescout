@@ -7,8 +7,9 @@
 | [hnsw-ann-index.md](hnsw-ann-index.md) | research / algorithm comparison | google, google_news, **google_scholar** (with citation counts) |
 
 Each brief is the Markdown export of a real run (`citescout ask "..." --markdown ...`) with a
-**Human review** section at the end. Every claim-to-citation pair was checked by hand against
-the cited evidence, and anything changed is listed there.
+**Review** section at the end. Every claim-to-citation pair was checked one by one against the
+cited evidence (by the AI coding agent that built the project, per the README's AI disclosure),
+and anything changed is listed there.
 
 Why the review exists: an earlier version of the moment.js brief claimed "Moment.js has a known
 inefficient parsing bug affecting RFC2822 strings" and cited a GitHub issue in an unrelated Java
@@ -19,5 +20,5 @@ passing mention inside some other project's repository can never be a claim's on
 The review also found a third-party blog on a `docs.` host being weighted as official
 documentation, which is now fixed in code (`_mark_official` in `citescout/agent.py`).
 
-What hand review still catches that code does not: a model over-reading a snippet that does
+What this review still catches that code does not: a model over-reading a snippet that does
 mention the right subject (see the README's limitations section).

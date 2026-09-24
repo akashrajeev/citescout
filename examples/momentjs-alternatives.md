@@ -47,9 +47,9 @@
 
 _SerpApi searches: 6 live, 0 cached. Unsupported claims dropped: 0. Off-subject citations unlinked: 0. Model: openai/gpt-oss-120b. Generated 2026-09-24 13:23 UTC by citescout._
 
-## Human review
+## Review
 
-This brief is a real citescout run (live SerpApi searches, output unchanged except as listed). Every claim-to-citation pair was then checked by hand against the cited snippet, and against the page itself where the snippet was thin. Changes made in review:
+This brief is a real citescout run (live SerpApi searches, output unchanged except as listed). Every claim-to-citation pair was then checked one by one (by the AI coding agent that built this project, see the AI disclosure in the README) against the cited snippet, and against the page itself where the snippet was thin. Changes made in review:
 
 - Maintenance-mode claim: dropped the words "officially" and "no new feature development", which the cited snippet (E7) does not say. The claim itself checks out against the project's own docs (https://momentjs.com/docs/: "Moment is a legacy project in maintenance mode"), but that page was not in this run's evidence, so it stays at low confidence.
 - Day.js bundle-size claim: removed E5 (pkgpulse). Its snippet recommends Day.js for a small Moment-like API but gives no size figures; E7 carries the 7 KB vs 289 KB numbers.

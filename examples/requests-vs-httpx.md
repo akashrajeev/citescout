@@ -57,9 +57,9 @@
 
 _SerpApi searches: 6 live, 0 cached. Unsupported claims dropped: 0. Off-subject citations unlinked: 0. Model: openai/gpt-oss-120b. Generated 2026-09-24 13:23 UTC by citescout._
 
-## Human review
+## Review
 
-This brief is a real citescout run (live SerpApi searches, output unchanged except as listed). Every claim-to-citation pair was then checked by hand against the cited snippet, and against the page itself where the snippet was thin. Changes made in review:
+This brief is a real citescout run (live SerpApi searches, output unchanged except as listed). Every claim-to-citation pair was then checked one by one (by the AI coding agent that built this project, see the AI disclosure in the README) against the cited snippet, and against the page itself where the snippet was thin. Changes made in review:
 
 - E4 (docs.bswen.com) re-typed from official_docs to blog: it is a third-party blog on a docs.* host. The fix is now in code (_mark_official), and claim confidence was recomputed.
 - pytest-httpx claim: rewritten. The model read E5 as saying httpx is stable; the snippet says pytest-httpx (the plugin) can be considered stable and will release 1.0.0 once httpx does.
