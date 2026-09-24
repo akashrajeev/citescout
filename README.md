@@ -27,6 +27,14 @@ Asking a chatbot "is X still maintained?" gets you a confident answer from train
 - Confidence (`high` / `medium` / `low`) is **computed from the sources**, not written by the model: independent domains, source type, freshness, and whether live registry data backs the claim.
 - Contradictions are found twice: by the model reading the evidence, and by deterministic rules that compare what web pages say ("the latest version is 2.1", "this project is abandoned") with what PyPI / npm / GitHub actually record, and pages that say "no known vulnerabilities" while OSV.dev lists advisories against the latest release.
 
+## Measured, not claimed
+
+`citescout eval` runs a fixed question set, saves each brief to [`evals/`](evals/) and scores the checks ([full table](docs/eval.md)). Re-running it costs 0 SerpApi credits because searches, plans and pages are cached, and `--rescore` re-checks the saved briefs with no model call at all.
+
+Current results on the three example questions: 22 shipped claims, 19 (86%) verified against a full page or live API record, 1 not found (confidence lowered), 2 unsupported claims dropped before shipping, 2 off-subject citations unlinked. Planted wrong facts caught: 12/12 (100%).
+
+The planted-error test takes every claim the deep-read pass verified, changes one hard fact (2.34.2 -> 2.34.3, 2026 -> 2027), and checks it again against the same pages. It measures whether a wrong number would get through.
+
 ## What a run looks like
 
 ```

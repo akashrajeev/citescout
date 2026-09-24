@@ -84,6 +84,12 @@ def main(argv: list[str] | None = None) -> int:
     ask.add_argument("--markdown", type=Path, help="Also write the brief as Markdown")
     ask.add_argument("--json", type=Path, help="Also write the full brief as JSON")
     sub.add_parser("budget", help="Show SerpApi credits left (Account API, free)")
+    ev = sub.add_parser("eval", help="Run the eval question set and score the checks (cached: 0 credits)")
+    ev.add_argument("--questions", type=Path, help="Text file, one question per line")
+    ev.add_argument("--offline", action="store_true", help="Cached SerpApi results only")
+    ev.add_argument("--out", type=Path, default=Path("evals"), help="Where briefs and scores go")
+    ev.add_argument("--rescore", action="store_true", help="Score the saved briefs in --out again (no LLM, no credits)")
+    ev.add_argument("--report", type=Path, default=Path("docs/eval.md"), help="Markdown report path")
     args = ap.parse_args(argv)
 
     try:
@@ -92,6 +98,21 @@ def main(argv: list[str] | None = None) -> int:
             acct = SerpSearcher(s.require_serpapi(), s.cache_dir).account() or {}
             console.print(f"{acct.get('plan_name')}: {acct.get('plan_searches_left')} of "
                           f"{acct.get('searches_per_month')} searches left this month")
+            return 0
+        if args.cmd == "eval":
+            from citescout import evals
+            from citescout.deepread import PageStore
+
+            s = load_settings(offline=args.offline)
+            qs = ([q.strip() for q in args.questions.read_text().splitlines() if q.strip()]
+                  if args.questions else evals.DEFAULT_QUESTIONS)
+            store = PageStore(s.cache_dir, offline=True)
+            scores = (evals.rescore(args.out, store) if args.rescore
+                      else evals.run(qs, lambda: ResearchAgent(s), args.out, store))
+            md = evals.report(scores)
+            args.report.parent.mkdir(parents=True, exist_ok=True)
+            args.report.write_text(md)
+            console.print(md)
             return 0
         s = load_settings(offline=args.offline, max_searches=args.max_searches, followups=args.followups)
         brief = ResearchAgent(s, trace=_trace, replan=args.replan).run(args.question)

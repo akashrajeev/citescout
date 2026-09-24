@@ -1,0 +1,889 @@
+{
+ "question": "Is the Python requests library still maintained, or should I switch to httpx?",
+ "verdict": "Requests is actively maintained \u2013 its latest release (v2.34.2) came out on 2026\u201105\u201114 and the repository has recent commits (2026\u201109\u201121) \u2013 whereas httpx has not had a new release since 2024\u201112\u201106, and its maintainer has closed issues and discussions in early 2026, indicating a decline in active maintenance. If you need async support, consider migrating to httpx2, which is actively released, rather than the legacy httpx.",
+ "claims": [
+  {
+   "text": "The Requests library\u2019s most recent version is 2.34.2, released on 2026\u201105\u201114.",
+   "citations": [
+    "E23"
+   ],
+   "confidence": "high",
+   "confidence_reason": "1 independent domain(s), includes live registry data",
+   "verification": "page",
+   "verification_detail": "verified against live API record E23"
+  },
+  {
+   "text": "The Requests GitHub repository was last pushed to on 2026\u201109\u201121 and is not archived.",
+   "citations": [
+    "E24"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s), includes live registry data; lowered: no cited source contains '21'",
+   "verification": "page",
+   "verification_detail": "verified against live API record E24"
+  },
+  {
+   "text": "Requests officially supports Python\u00a03.10+ and runs on PyPy.",
+   "citations": [
+    "E2",
+    "E3"
+   ],
+   "confidence": "high",
+   "confidence_reason": "2 independent domain(s)",
+   "verification": "page",
+   "verification_detail": "verified against full page E2, E3"
+  },
+  {
+   "text": "The latest httpx release is 0.28.1, published on 2024\u201112\u201106.",
+   "citations": [
+    "E25"
+   ],
+   "confidence": "high",
+   "confidence_reason": "1 independent domain(s), includes live registry data",
+   "verification": "page",
+   "verification_detail": "verified against live API record E25"
+  },
+  {
+   "text": "The httpx GitHub repository had a push on 2026\u201103\u201129 but has had no releases since 2024\u201112\u201106.",
+   "citations": [
+    "E26"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s), includes live registry data; lowered: no cited source contains '29'",
+   "verification": "page",
+   "verification_detail": "verified against live API record E26"
+  },
+  {
+   "text": "In February\u00a02026 the httpx maintainer closed all issues and discussions on the repository, signalling reduced active maintenance.",
+   "citations": [
+    "E6",
+    "E12",
+    "E9"
+   ],
+   "confidence": "medium",
+   "confidence_reason": "3 independent domain(s)",
+   "verification": "page",
+   "verification_detail": "verified against full page E6, E12, E9"
+  }
+ ],
+ "contradictions": [
+  {
+   "topic": "httpx maintenance status",
+   "positions": [
+    "httpx is unmaintained, no releases since 2024\u201112\u201106 [E7, E9, E15]",
+    "httpx repository has recent pushes in 2026\u201103\u201129, indicating some activity [E26]"
+   ],
+   "citations": [
+    "E7",
+    "E9",
+    "E15",
+    "E26"
+   ],
+   "detected_by": "model",
+   "resolution": "The newer evidence (E26) shows repository activity but no new releases, suggesting maintenance is limited to code commits without formal releases."
+  },
+  {
+   "topic": "Is encode/httpx still maintained?",
+   "positions": [
+    "github.com calls it 'unmaintained' [E7]",
+    "github shows activity on 2026-03-29 [E26]"
+   ],
+   "citations": [
+    "E7",
+    "E26"
+   ],
+   "detected_by": "rule",
+   "resolution": "Check what the page refers to: it may describe an old major version, a sub-module, or be outdated."
+  }
+ ],
+ "open_questions": [
+  "Will httpx2 fully replace httpx for all use cases?",
+  "What is the long\u2011term support plan for httpx2?",
+  "Are there any breaking changes that would affect migration from Requests to httpx2?"
+ ],
+ "evidence": [
+  {
+   "id": "E1",
+   "engine": "google",
+   "query": "site:github.com psf/requests issues",
+   "url": "https://pypi.org/project/requests/",
+   "title": "Requests",
+   "snippet": "Requests is one of the most downloaded Python packages today, pulling in around 300M downloads / week \u2014 according to GitHub, Requests is currently depended upon ...",
+   "source_name": "PyPI",
+   "domain": "pypi.org",
+   "source_type": "package_registry",
+   "published": null,
+   "rank": 1,
+   "cited_by": null
+  },
+  {
+   "id": "E2",
+   "engine": "google",
+   "query": "site:github.com psf/requests issues",
+   "url": "https://requests.readthedocs.io/",
+   "title": "Requests: HTTP for Humans\u2122 \u2014 Requests 2.34.2 ...",
+   "snippet": "Requests allows you to send HTTP/1.1 requests extremely easily. -encode your POST data. officially supports Python 3.10+, and runs great on PyPy. Errors and ...",
+   "source_name": "Requests: HTTP for Humans",
+   "domain": "requests.readthedocs.io",
+   "source_type": "official_docs",
+   "published": null,
+   "rank": 2,
+   "cited_by": null
+  },
+  {
+   "id": "E3",
+   "engine": "google",
+   "query": "site:github.com psf/requests issues",
+   "url": "https://github.com/psf/requests",
+   "title": "psf/requests: A simple, yet elegant, HTTP library.",
+   "snippet": "Issues 152 Pull requests. Requests allows you to send HTTP/1.1 requests extremely easily. Requests officially supports Python 3.10+.",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": null,
+   "rank": 3,
+   "cited_by": null
+  },
+  {
+   "id": "E4",
+   "engine": "google",
+   "query": "site:github.com psf/requests issues",
+   "url": "https://www.reddit.com/r/sysadmin/comments/1ouqi7a/m365_admins_how_do_you_handle_admin_consent/",
+   "title": "How do you handle Admin Consent Requests for ...",
+   "snippet": "Wondering how other M365 sysadmins handle Admin Consent requests for Enterprise Apps. Historically, I have taken the approach to just ignore the ...",
+   "source_name": "Reddit \u00b7 r/sysadmin",
+   "domain": "www.reddit.com",
+   "source_type": "forum",
+   "published": null,
+   "rank": 4,
+   "cited_by": null
+  },
+  {
+   "id": "E5",
+   "engine": "google",
+   "query": "site:github.com psf/requests issues",
+   "url": "https://requests.readthedocs.io/en/latest/api/",
+   "title": "Developer Interface \u2014 Requests 2.34.2 documentation",
+   "snippet": "Compared with the 1.0 release, there were relatively few backwards incompatible changes, but there are still a few issues to be aware of with this major ...",
+   "source_name": "Requests: HTTP for Humans",
+   "domain": "requests.readthedocs.io",
+   "source_type": "official_docs",
+   "published": null,
+   "rank": 6,
+   "cited_by": null
+  },
+  {
+   "id": "E6",
+   "engine": "google",
+   "query": "httpx Python library GitHub releases",
+   "url": "https://www.reddit.com/r/Python/comments/1rl5kuq/anyone_know_whats_up_with_httpx/",
+   "title": "Anyone know what's up with HTTPX? : r/Python",
+   "snippet": "The maintainer of HTTPX closed off access to issues and discussions last week: https://github.com/encode/httpx/discussions/3784 And it hasn't had a release ...",
+   "source_name": "Reddit \u00b7 r/Python",
+   "domain": "www.reddit.com",
+   "source_type": "forum",
+   "published": null,
+   "rank": 1,
+   "cited_by": null
+  },
+  {
+   "id": "E7",
+   "engine": "google",
+   "query": "httpx Python library GitHub releases",
+   "url": "https://github.com/openai/openai-python/issues/3375",
+   "title": "Consider migrating from httpx to httpx2 \u00b7 Issue #3375",
+   "snippet": "httpx has become effectively unmaintained \u2014 no releases since 2024, The HTTPX2 migration was completed in #3594 and released in https://github.com/openai/ ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-06-06T00:00:00Z",
+   "rank": 2,
+   "cited_by": null
+  },
+  {
+   "id": "E8",
+   "engine": "google",
+   "query": "httpx Python library GitHub releases",
+   "url": "https://www.sentinelone.com/vulnerability-database/cve-2021-41945/",
+   "title": "CVE-2021-41945: Encode Httpx Input Validation ...",
+   "snippet": "Encode has released version 0.23.0 of httpx. For additional information about the release, see the GitHub HTTPX Release 0.23.0.",
+   "source_name": "SentinelOne",
+   "domain": "www.sentinelone.com",
+   "source_type": "other",
+   "published": "2026-02-25T00:00:00Z",
+   "rank": 3,
+   "cited_by": null
+  },
+  {
+   "id": "E9",
+   "engine": "google",
+   "query": "httpx Python library GitHub releases",
+   "url": "https://docs.bswen.com/blog/2026-03-05-httpx-library-status/",
+   "title": "HTTPX Python Library Status in 2026: What Developers Need ...",
+   "snippet": "On February 27, 2026, the HTTPX maintainer closed all issues and discussions on the GitHub repository. The last stable release (v0.28.1) was December 6, 2024 \u2026 ...",
+   "source_name": "bswen.com",
+   "domain": "docs.bswen.com",
+   "source_type": "blog",
+   "published": "2026-03-05T00:00:00Z",
+   "rank": 4,
+   "cited_by": null
+  },
+  {
+   "id": "E10",
+   "engine": "google",
+   "query": "httpx Python library GitHub releases",
+   "url": "https://pypi.org/project/pytest-httpx/",
+   "title": "pytest-httpx",
+   "snippet": "Version 1.0.0 will be released once httpx is considered as stable (release of 1.0.0). However, current state can be considered as stable.",
+   "source_name": "PyPI",
+   "domain": "pypi.org",
+   "source_type": "package_registry",
+   "published": "2026-04-09T00:00:00Z",
+   "rank": 5,
+   "cited_by": null
+  },
+  {
+   "id": "E11",
+   "engine": "google",
+   "query": "httpx Python library GitHub releases",
+   "url": "https://github.com/luminati-io/best-python-http-clients",
+   "title": "The Best Python HTTP Clients for Web Scraping",
+   "snippet": "HTTPX HTTPX represents a modern evolution of Python HTTP clients, designed as a Requests replacement with added asynchronous support and improved performance.",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2025-10-30T00:00:00Z",
+   "rank": 6,
+   "cited_by": null
+  },
+  {
+   "id": "E12",
+   "engine": "google",
+   "query": "site:github.com encode/httpx issues",
+   "url": "https://github.com/encode/httpx/discussions/3784",
+   "title": "Closing off access. \u00b7 encode httpx \u00b7 Discussion #3784",
+   "snippet": "I've closed off access to issues and discussions. I don't want to continue allowing an online environment with such an absurdly skewed gender representation ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-03-04T00:00:00Z",
+   "rank": 1,
+   "cited_by": null
+  },
+  {
+   "id": "E13",
+   "engine": "google",
+   "query": "site:github.com encode/httpx issues",
+   "url": "https://github.com/pydantic/httpx2/issues/827",
+   "title": "`httpx.AsyncClient` has much worse performance than ...",
+   "snippet": "There seems to be some performance issues in httpx as it has much worse performance compared to using aiohttp with concurrently running requests.",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-05-11T00:00:00Z",
+   "rank": 2,
+   "cited_by": null
+  },
+  {
+   "id": "E14",
+   "engine": "google",
+   "query": "site:github.com encode/httpx issues",
+   "url": "https://github.com/pydantic/httpx2/issues/64",
+   "title": "Document protocol versions and negotiation mechanism #64",
+   "snippet": "I need to make a http2 get requests, i tried with hyper but having issues with headers my question is if i can make these same requests with httpx",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-05-10T00:00:00Z",
+   "rank": 3,
+   "cited_by": null
+  },
+  {
+   "id": "E15",
+   "engine": "google",
+   "query": "site:github.com encode/httpx issues",
+   "url": "https://github.com/open-telemetry/opentelemetry-python-contrib/issues/4635",
+   "title": "Issue #4635 \u00b7 open-telemetry/opentelemetry-python-contrib",
+   "snippet": "Recently, the maintainers of httpx have taken a number of actions that suggest a disinterest in continuing to maintain the project. The last release was more ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-05-27T00:00:00Z",
+   "rank": 4,
+   "cited_by": null
+  },
+  {
+   "id": "E16",
+   "engine": "google",
+   "query": "site:github.com encode/httpx issues",
+   "url": "https://github.com/pydantic/httpx2/issues/818",
+   "title": "Set proxy for a single request \u00b7 Issue #818 \u00b7 pydantic/httpx2",
+   "snippet": "We can only create a global proxy when the client is instantiated. Whether to add proxy parameters in every client requests\uff1f",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-05-11T00:00:00Z",
+   "rank": 5,
+   "cited_by": null
+  },
+  {
+   "id": "E17",
+   "engine": "google",
+   "query": "site:github.com encode/httpx issues",
+   "url": "https://github.com/NousResearch/hermes-agent/issues/48428",
+   "title": "kimi-coding provider: brotli streaming decode bug \u2014 need ...",
+   "snippet": "Problem The kimi-coding (and kimi-coding-cn) provider triggers a brotli streaming decode bug in httpx when Kimi API returns content-encoding: br responses.",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-06-18T00:00:00Z",
+   "rank": 6,
+   "cited_by": null
+  },
+  {
+   "id": "E18",
+   "engine": "google",
+   "query": "switch from requests to httpx recommendation",
+   "url": "https://oneuptime.com/blog/post/2026-02-03-python-httpx-async-requests/view",
+   "title": "How to Use httpx for Async HTTP Requests",
+   "snippet": "Learn how to make async HTTP requests in Python using httpx. This guide covers sync and async clients, streaming, timeouts, retries, and advanced patterns.",
+   "source_name": "OneUptime",
+   "domain": "oneuptime.com",
+   "source_type": "other",
+   "published": "2026-02-03T00:00:00Z",
+   "rank": 1,
+   "cited_by": null
+  },
+  {
+   "id": "E19",
+   "engine": "google",
+   "query": "switch from requests to httpx recommendation",
+   "url": "https://towardsdatascience.com/beyond-requests-why-httpx-is-the-modern-http-client-you-need-sometimes/",
+   "title": "Beyond Requests: Why httpx is the Modern HTTP Client ...",
+   "snippet": "In that case, HTTPX is not merely a library to observe \u2014 it is a library to begin using. The transition from Requests is smooth for synchronous code, and ...",
+   "source_name": "Towards Data Science",
+   "domain": "towardsdatascience.com",
+   "source_type": "other",
+   "published": "2025-10-15T00:00:00Z",
+   "rank": 2,
+   "cited_by": null
+  },
+  {
+   "id": "E20",
+   "engine": "google",
+   "query": "switch from requests to httpx recommendation",
+   "url": "https://ai.plainenglish.io/python-requests-vs-httpx-vs-aiohttp-i-benchmarked-all-3-on-real-traffic-77eb20545476",
+   "title": "Python Requests vs httpx vs aiohttp. I Benchmarked All 3 ...",
+   "snippet": "Once I switched to async requests, the performance difference became much bigger. Both httpx and aiohttp were far faster than making requests one by one.",
+   "source_name": "Artificial Intelligence in Plain English",
+   "domain": "ai.plainenglish.io",
+   "source_type": "other",
+   "published": "2026-05-30T00:00:00Z",
+   "rank": 5,
+   "cited_by": null
+  },
+  {
+   "id": "E21",
+   "engine": "google",
+   "query": "switch from requests to httpx recommendation",
+   "url": "https://blog.stackademic.com/i-compared-4-python-http-libraries-one-shocked-me-completely-126f51bba917",
+   "title": "I Compared 4 Python HTTP Libraries. One Shocked Me ...",
+   "snippet": "It feels almost the same as requests but includes real async support. Moving from requests to httpx in an existing project usually takes only a few hours.",
+   "source_name": "Stackademic",
+   "domain": "blog.stackademic.com",
+   "source_type": "other",
+   "published": "2026-05-19T00:00:00Z",
+   "rank": 6,
+   "cited_by": null
+  },
+  {
+   "id": "E22",
+   "engine": "google",
+   "query": "site:github.com encode/httpx releases 2026",
+   "url": "https://github.com/PrefectHQ/fastmcp/issues/4278",
+   "title": "Move to httpx2 \u00b7 Issue #4278 \u00b7 PrefectHQ/fastmcp",
+   "snippet": "... encode/httpx under a new package name, not a version bump. First release: v2.0.0 (May 12, 2026), latest: v2.3.0 (June 1, 2026). The API is identical to httpx ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-06-03T00:00:00Z",
+   "rank": 3,
+   "cited_by": null
+  },
+  {
+   "id": "E23",
+   "engine": null,
+   "query": null,
+   "url": "https://pypi.org/project/requests/",
+   "title": "PYPI record for requests",
+   "snippet": "latest version 2.34.2; released 2026-05-14; no known OSV advisories affect 2.34.2; 16 OSV advisories across all versions (live API)",
+   "source_name": null,
+   "domain": "pypi.org",
+   "source_type": "package_registry",
+   "published": "2026-05-14T19:25:27.735762Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E24",
+   "engine": null,
+   "query": null,
+   "url": "https://github.com/psf/requests",
+   "title": "GITHUB record for psf/requests",
+   "snippet": "latest version v2.34.2; released 2026-05-14; repository not archived; last push 2026-09-21; 240 open issues+PRs; 54341 stars (live API)",
+   "source_name": null,
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-05-14T19:27:15Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E25",
+   "engine": null,
+   "query": null,
+   "url": "https://pypi.org/project/httpx/",
+   "title": "PYPI record for httpx",
+   "snippet": "latest version 0.28.1; released 2024-12-06; no known OSV advisories affect 0.28.1; 2 OSV advisories across all versions (live API)",
+   "source_name": null,
+   "domain": "pypi.org",
+   "source_type": "package_registry",
+   "published": "2024-12-06T15:37:23.222462Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E26",
+   "engine": null,
+   "query": null,
+   "url": "https://github.com/encode/httpx",
+   "title": "GITHUB record for encode/httpx",
+   "snippet": "latest version 0.28.1; released 2024-12-06; repository not archived; last push 2026-03-29; 140 open issues+PRs; 15506 stars (live API)",
+   "source_name": null,
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2024-12-06T15:36:24Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E27",
+   "engine": "google_trends",
+   "query": "python requests,python httpx",
+   "url": "https://trends.google.com/trends/explore?date=today%2012-m&q=python%20requests%2Cpython%20httpx",
+   "title": "Google Trends: python requests vs python httpx (past 12 months)",
+   "snippet": "Relative search interest, 0-100. python requests: average interest 36 over the last 3 months (down 20% vs the first 3 months); python httpx: average interest 3 over the last 3 months (down 41% vs the first 3 months)",
+   "source_name": null,
+   "domain": "trends.google.com",
+   "source_type": "other",
+   "published": null,
+   "rank": null,
+   "cited_by": null
+  }
+ ],
+ "registry_facts": [
+  {
+   "subject": "requests",
+   "source": "pypi",
+   "url": "https://pypi.org/project/requests/",
+   "latest_version": "2.34.2",
+   "latest_release": "2026-05-14T19:25:27.735762Z",
+   "archived": null,
+   "last_push": null,
+   "open_issues": null,
+   "stars": null,
+   "deprecated_notice": null,
+   "weekly_downloads": null,
+   "vulns_latest": [],
+   "vulns_total": 16,
+   "evidence_id": "E23"
+  },
+  {
+   "subject": "psf/requests",
+   "source": "github",
+   "url": "https://github.com/psf/requests",
+   "latest_version": "v2.34.2",
+   "latest_release": "2026-05-14T19:27:15Z",
+   "archived": false,
+   "last_push": "2026-09-21T20:22:36Z",
+   "open_issues": 240,
+   "stars": 54341,
+   "deprecated_notice": null,
+   "weekly_downloads": null,
+   "vulns_latest": null,
+   "vulns_total": null,
+   "evidence_id": "E24"
+  },
+  {
+   "subject": "httpx",
+   "source": "pypi",
+   "url": "https://pypi.org/project/httpx/",
+   "latest_version": "0.28.1",
+   "latest_release": "2024-12-06T15:37:23.222462Z",
+   "archived": null,
+   "last_push": null,
+   "open_issues": null,
+   "stars": null,
+   "deprecated_notice": null,
+   "weekly_downloads": null,
+   "vulns_latest": [],
+   "vulns_total": 2,
+   "evidence_id": "E25"
+  },
+  {
+   "subject": "encode/httpx",
+   "source": "github",
+   "url": "https://github.com/encode/httpx",
+   "latest_version": "0.28.1",
+   "latest_release": "2024-12-06T15:36:24Z",
+   "archived": false,
+   "last_push": "2026-03-29T00:19:16Z",
+   "open_issues": 140,
+   "stars": 15506,
+   "deprecated_notice": null,
+   "weekly_downloads": null,
+   "vulns_latest": null,
+   "vulns_total": null,
+   "evidence_id": "E26"
+  }
+ ],
+ "plan": {
+  "intent": "maintenance",
+  "subjects": [
+   {
+    "name": "requests",
+    "ecosystem": "pypi",
+    "repo": "psf/requests"
+   },
+   {
+    "name": "httpx",
+    "ecosystem": "pypi",
+    "repo": "encode/httpx"
+   }
+  ],
+  "searches": [
+   {
+    "engine": "google",
+    "query": "requests library Python GitHub releases",
+    "purpose": "Check latest releases and maintenance activity for requests",
+    "recent_only": true
+   },
+   {
+    "engine": "google",
+    "query": "site:github.com psf/requests issues",
+    "purpose": "Assess recent issue activity for requests to gauge health",
+    "recent_only": true
+   },
+   {
+    "engine": "google",
+    "query": "httpx Python library GitHub releases",
+    "purpose": "Check latest releases and maintenance activity for httpx",
+    "recent_only": true
+   },
+   {
+    "engine": "google",
+    "query": "site:github.com encode/httpx issues",
+    "purpose": "Assess recent issue activity for httpx",
+    "recent_only": true
+   },
+   {
+    "engine": "google_news",
+    "query": "Python requests library maintenance 2026",
+    "purpose": "Find news or announcements about the current status of requests",
+    "recent_only": true
+   },
+   {
+    "engine": "google",
+    "query": "switch from requests to httpx recommendation",
+    "purpose": "Locate community discussions or blog posts comparing the two libraries",
+    "recent_only": true
+   }
+  ],
+  "rationale": "The question asks whether the Python requests library is still maintained and if switching to httpx is advisable. This requires checking recent release activity and issue activity for both projects (primary sources), confirming any public announcements about requests' status (independent news), and reviewing community comparisons to understand migration considerations."
+ },
+ "comparison": {
+  "subjects": [
+   "requests",
+   "httpx"
+  ],
+  "rows": [
+   {
+    "metric": "Latest version",
+    "values": [
+     "2.34.2",
+     "0.28.1"
+    ],
+    "citations": [
+     "E23",
+     "E25"
+    ]
+   },
+   {
+    "metric": "Latest release",
+    "values": [
+     "2026-05-14",
+     "2024-12-06"
+    ],
+    "citations": [
+     "E23",
+     "E25"
+    ]
+   },
+   {
+    "metric": "Last push (GitHub)",
+    "values": [
+     "2026-09-21",
+     "2026-03-29"
+    ],
+    "citations": [
+     "E24",
+     "E26"
+    ]
+   },
+   {
+    "metric": "Archived",
+    "values": [
+     "no",
+     "no"
+    ],
+    "citations": [
+     "E24",
+     "E26"
+    ]
+   },
+   {
+    "metric": "GitHub stars",
+    "values": [
+     "54,341",
+     "15,506"
+    ],
+    "citations": [
+     "E24",
+     "E26"
+    ]
+   },
+   {
+    "metric": "OSV advisories on latest",
+    "values": [
+     "0",
+     "0"
+    ],
+    "citations": [
+     "E23",
+     "E25"
+    ]
+   },
+   {
+    "metric": "Search interest, last 3 months (Trends)",
+    "values": [
+     "36 (down 20%)",
+     "3 (down 41%)"
+    ],
+    "citations": [
+     "E27"
+    ]
+   }
+  ]
+ },
+ "trends": {
+  "terms": [
+   "python requests",
+   "python httpx"
+  ],
+  "dates": [
+   "Sep 21\u2009\u2013\u200927, 2025",
+   "Sep 28\u2009\u2013\u2009Oct 4, 2025",
+   "Oct 5\u2009\u2013\u200911, 2025",
+   "Oct 12\u2009\u2013\u200918, 2025",
+   "Oct 19\u2009\u2013\u200925, 2025",
+   "Oct 26\u2009\u2013\u2009Nov 1, 2025",
+   "Nov 2\u2009\u2013\u20098, 2025",
+   "Nov 9\u2009\u2013\u200915, 2025",
+   "Nov 16\u2009\u2013\u200922, 2025",
+   "Nov 23\u2009\u2013\u200929, 2025",
+   "Nov 30\u2009\u2013\u2009Dec 6, 2025",
+   "Dec 7\u2009\u2013\u200913, 2025",
+   "Dec 14\u2009\u2013\u200920, 2025",
+   "Dec 21\u2009\u2013\u200927, 2025",
+   "Dec 28, 2025\u2009\u2013\u2009Jan 3, 2026",
+   "Jan 4\u2009\u2013\u200910, 2026",
+   "Jan 11\u2009\u2013\u200917, 2026",
+   "Jan 18\u2009\u2013\u200924, 2026",
+   "Jan 25\u2009\u2013\u200931, 2026",
+   "Feb 1\u2009\u2013\u20097, 2026",
+   "Feb 8\u2009\u2013\u200914, 2026",
+   "Feb 15\u2009\u2013\u200921, 2026",
+   "Feb 22\u2009\u2013\u200928, 2026",
+   "Mar 1\u2009\u2013\u20097, 2026",
+   "Mar 8\u2009\u2013\u200914, 2026",
+   "Mar 15\u2009\u2013\u200921, 2026",
+   "Mar 22\u2009\u2013\u200928, 2026",
+   "Mar 29\u2009\u2013\u2009Apr 4, 2026",
+   "Apr 5\u2009\u2013\u200911, 2026",
+   "Apr 12\u2009\u2013\u200918, 2026",
+   "Apr 19\u2009\u2013\u200925, 2026",
+   "Apr 26\u2009\u2013\u2009May 2, 2026",
+   "May 3\u2009\u2013\u20099, 2026",
+   "May 10\u2009\u2013\u200916, 2026",
+   "May 17\u2009\u2013\u200923, 2026",
+   "May 24\u2009\u2013\u200930, 2026",
+   "May 31\u2009\u2013\u2009Jun 6, 2026",
+   "Jun 7\u2009\u2013\u200913, 2026",
+   "Jun 14\u2009\u2013\u200920, 2026",
+   "Jun 21\u2009\u2013\u200927, 2026",
+   "Jun 28\u2009\u2013\u2009Jul 4, 2026",
+   "Jul 5\u2009\u2013\u200911, 2026",
+   "Jul 12\u2009\u2013\u200918, 2026",
+   "Jul 19\u2009\u2013\u200925, 2026",
+   "Jul 26\u2009\u2013\u2009Aug 1, 2026",
+   "Aug 2\u2009\u2013\u20098, 2026",
+   "Aug 9\u2009\u2013\u200915, 2026",
+   "Aug 16\u2009\u2013\u200922, 2026",
+   "Aug 23\u2009\u2013\u200929, 2026",
+   "Aug 30\u2009\u2013\u2009Sep 5, 2026",
+   "Sep 6\u2009\u2013\u200912, 2026",
+   "Sep 13\u2009\u2013\u200919, 2026",
+   "Sep 20\u2009\u2013\u200926, 2026"
+  ],
+  "values": [
+   [
+    44,
+    42,
+    44,
+    45,
+    42,
+    42,
+    44,
+    47,
+    44,
+    45,
+    52,
+    49,
+    44,
+    30,
+    27,
+    33,
+    41,
+    40,
+    43,
+    40,
+    54,
+    47,
+    48,
+    52,
+    55,
+    52,
+    63,
+    73,
+    69,
+    53,
+    53,
+    69,
+    78,
+    93,
+    77,
+    98,
+    100,
+    86,
+    99,
+    88,
+    68,
+    64,
+    42,
+    45,
+    44,
+    35,
+    30,
+    27,
+    24,
+    23,
+    22,
+    18,
+    26
+   ],
+   [
+    5,
+    5,
+    6,
+    5,
+    5,
+    4,
+    5,
+    5,
+    6,
+    5,
+    5,
+    4,
+    6,
+    3,
+    2,
+    4,
+    5,
+    6,
+    6,
+    4,
+    5,
+    7,
+    8,
+    8,
+    7,
+    7,
+    6,
+    7,
+    9,
+    6,
+    5,
+    5,
+    6,
+    7,
+    7,
+    12,
+    9,
+    11,
+    10,
+    11,
+    6,
+    5,
+    4,
+    3,
+    4,
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ]
+  ],
+  "url": "https://trends.google.com/trends/explore?date=today%2012-m&q=python%20requests%2Cpython%20httpx"
+ },
+ "gaps": [
+  "Open question: Will the HTTPX project resume regular releases or reach a stable 1.0 version?",
+  "Open question: How will the closure of issue trackers affect security vulnerability reporting and fixes for HTTPX?"
+ ],
+ "followups": [
+  {
+   "engine": "google",
+   "query": "site:github.com encode/httpx releases 2026",
+   "purpose": "follow-up: verify whether HTTPX has any releases after the 2026\u201103\u201129 code push, closing the gap about unconfirmed release activity",
+   "recent_only": true
+  },
+  {
+   "engine": "google",
+   "query": "site:github.com encode/httpx issues closed 2026",
+   "purpose": "follow-up: confirm that the HTTPX maintainer closed all issue and discussion threads in early 2026, addressing the gap about halted community support",
+   "recent_only": true
+  }
+ ],
+ "searches_used": 0,
+ "cache_hits": 10,
+ "dropped_claims": 2,
+ "pages_read": 4,
+ "claims_page_verified": 6,
+ "claims_unconfirmed": 0,
+ "unlinked_citations": 2,
+ "model": "openai/gpt-oss-20b",
+ "generated_at": "2026-09-24T14:24:24.867124Z"
+}

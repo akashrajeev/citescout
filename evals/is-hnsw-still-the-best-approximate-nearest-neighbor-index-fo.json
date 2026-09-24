@@ -1,0 +1,926 @@
+{
+ "question": "Is HNSW still the best approximate nearest neighbor index for vector search, or have newer indexes like DiskANN or ScaNN overtaken it?",
+ "verdict": "Recent benchmarks and academic studies show that newer indexes like DiskANN and ScaNN often surpass HNSW in memory efficiency, dimensionality support, and query throughput, and search interest is shifting toward DiskANN, though HNSW remains actively maintained and still competitive in many scenarios [E1, E4, E14, E24]",
+ "claims": [
+  {
+   "text": "DiskANN achieves comparable recall with lower memory (64\u202fGB\u202f+\u202fSSD) and ~3\u202fms latency on a 1\u202fB\u2011vector dataset, outperforming HNSW on the same scale",
+   "citations": [
+    "E1"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s)",
+   "verification": "snippet",
+   "verification_detail": "matches the search snippet; the full page did not confirm it or was not readable"
+  },
+  {
+   "text": "DiskANN can index vectors up to 16\u202f000 dimensions, whereas HNSW typically tops out around 2\u202f000 dimensions",
+   "citations": [
+    "E5"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s)",
+   "verification": "page",
+   "verification_detail": "verified against full page E5"
+  },
+  {
+   "text": "ScaNN delivers roughly twice the queries\u2011per\u2011second of HNSW and maintains recall better as corpus size grows",
+   "citations": [
+    "E4"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s)",
+   "verification": "page",
+   "verification_detail": "verified against full page E4"
+  },
+  {
+   "text": "Academic comparative analyses report that partition\u2011based methods such as ScaNN generally outperform graph\u2011based methods like HNSW and DiskANN",
+   "citations": [
+    "E14"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s)",
+   "verification": "snippet",
+   "verification_detail": "matches the search snippet; the full page did not confirm it or was not readable"
+  },
+  {
+   "text": "All three libraries\u2014hnswlib (v0.9.0, 2026\u201103\u201128), DiskANN (v0.59.0, 2026\u201109\u201111), and ScaNN (v1.4.2, 2025\u201108\u201129)\u2014have recent releases and active repositories, indicating ongoing maintenance",
+   "citations": [
+    "E21",
+    "E22",
+    "E23"
+   ],
+   "confidence": "high",
+   "confidence_reason": "2 independent domain(s), includes live registry data",
+   "verification": "page",
+   "verification_detail": "verified against live API record E21, E22, E23"
+  },
+  {
+   "text": "Google Trends data from the past three months show rising interest for DiskANN (average 45) and a 100\u202f% drop for both HNSW and ScaNN",
+   "citations": [
+    "E24"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s)",
+   "verification": "page",
+   "verification_detail": "verified against live API record E24"
+  },
+  {
+   "text": "DiskANN is designed for SSD\u2011resident operation, enabling scalable and cost\u2011effective vector search on large datasets",
+   "citations": [
+    "E2",
+    "E8"
+   ],
+   "confidence": "medium",
+   "confidence_reason": "2 independent domain(s)",
+   "verification": "page",
+   "verification_detail": "verified against full page E2, E8"
+  },
+  {
+   "text": "HNSW recall degrades faster than flat search as the corpus size increases, highlighting scalability limits",
+   "citations": [
+    "E4"
+   ],
+   "confidence": "low",
+   "confidence_reason": "1 independent domain(s)",
+   "verification": "page",
+   "verification_detail": "verified against full page E4"
+  }
+ ],
+ "contradictions": [],
+ "open_questions": [
+  "Direct head\u2011to\u2011head performance comparison of ScaNN versus DiskANN on identical hardware and datasets",
+  "Effect of the new AVX512 builds of hnswlib on its speed and memory usage relative to DiskANN",
+  "Real\u2011world adoption metrics beyond search interest (e.g., production deployments, latency targets)",
+  "Recall\u2011latency trade\u2011offs of each index for sub\u2011million versus billion\u2011scale workloads"
+ ],
+ "evidence": [
+  {
+   "id": "E1",
+   "engine": "google",
+   "query": "HNSW vs DiskANN vs ScaNN benchmark",
+   "url": "https://medium.com/@adnanmasood/the-shortcut-through-space-hierarchical-navigable-small-worlds-hnsw-in-vector-search-part-2-ba2e8a64134e",
+   "title": "Hierarchical Navigable Small Worlds (HNSW) in Vector ...",
+   "snippet": "Microsoft's benchmarks of DiskANN vs HNSW on a 1B-scale dataset found DiskANN needed only 64GB RAM + SSD to achieve 95% recall with ~3ms latency, whereas a ...",
+   "source_name": "Medium",
+   "domain": "medium.com",
+   "source_type": "blog",
+   "published": null,
+   "rank": 1,
+   "cited_by": null
+  },
+  {
+   "id": "E2",
+   "engine": "google",
+   "query": "HNSW vs DiskANN vs ScaNN benchmark",
+   "url": "https://bigdataboutique.com/blog/hnsw-vs-ivfflat-how-to-choose-the-right-vector-index",
+   "title": "HNSW vs IVFFlat: How to Choose the Right Vector Index",
+   "snippet": "DiskANN is a graph index designed for SSD-resident operation. ScaNN focuses on high-recall, high-throughput inner-product search.",
+   "source_name": "Big Data Boutique",
+   "domain": "bigdataboutique.com",
+   "source_type": "other",
+   "published": "2026-05-29T00:00:00Z",
+   "rank": 2,
+   "cited_by": null
+  },
+  {
+   "id": "E3",
+   "engine": "google",
+   "query": "HNSW vs DiskANN vs ScaNN benchmark",
+   "url": "https://dev.to/aairom/jvector-vs-hsnw-part-3-2n3g",
+   "title": "Jvector vs. HSNW (Part 3)",
+   "snippet": "In this post, I analyze the performance benchmarks and design choices that make jVector a faster, more memory-efficient alternative to HNSW!",
+   "source_name": "DEV Community",
+   "domain": "dev.to",
+   "source_type": "forum",
+   "published": "2026-01-13T00:00:00Z",
+   "rank": 3,
+   "cited_by": null
+  },
+  {
+   "id": "E4",
+   "engine": "google",
+   "query": "HNSW vs DiskANN vs ScaNN benchmark",
+   "url": "https://ranjankumar.in/hnsw-vector-search-recall-production",
+   "title": "HNSW Vector Search Recall Failures in Production",
+   "snippet": "HNSW recall degrades faster than flat search as corpus size grows. ScaNN is the clearest example. ScaNN handled roughly twice as many queries per second as the ...",
+   "source_name": "ranjankumar.in",
+   "domain": "ranjankumar.in",
+   "source_type": "other",
+   "published": "2026-05-28T00:00:00Z",
+   "rank": 4,
+   "cited_by": null
+  },
+  {
+   "id": "E5",
+   "engine": "google",
+   "query": "HNSW vs DiskANN vs ScaNN benchmark",
+   "url": "https://www.dbi-services.com/blog/pgvector-a-guide-for-dba-part-2-indexes-update-march-2026/",
+   "title": "pgvector, a guide for DBA - Part 2: Indexes (update march ...",
+   "snippet": "HNSW sets 2,000 (not 2,048) and pgvectorscale's DiskANN sets 16,000 (not 16,384). DiskANN can handle 16,000 dimensions where HNSW on vector tops out at 2,000 \u2014 ...",
+   "source_name": "dbi services",
+   "domain": "www.dbi-services.com",
+   "source_type": "other",
+   "published": "2026-03-01T00:00:00Z",
+   "rank": 6,
+   "cited_by": null
+  },
+  {
+   "id": "E6",
+   "engine": "google",
+   "query": "site:github.com nmslib/hnswlib releases",
+   "url": "https://github.com/nmslib/hnswlib/releases",
+   "title": "Releases \u00b7 nmslib/hnswlib",
+   "snippet": "yurymalkov released this Dec 2, 2023 v0.8.0 \u2026 hnswlib AVX512 and AVX builds are not backwards-compatible with older SSE and non-AVX512 architectures. adding ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-03-28T00:00:00Z",
+   "rank": 1,
+   "cited_by": null
+  },
+  {
+   "id": "E7",
+   "engine": "google",
+   "query": "site:github.com nmslib/hnswlib releases",
+   "url": "https://github.com/dylanhogg/awesome-python/blob/main/README.md",
+   "title": "awesome-python/README.md at main",
+   "snippet": "A library of extension and helper modules for Python's data analysis and machine learning libraries. nmslib/hnswlib \u2b50. Unified embedding generation and search ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-07-01T00:00:00Z",
+   "rank": 2,
+   "cited_by": null
+  },
+  {
+   "id": "E8",
+   "engine": "google",
+   "query": "site:github.com microsoft/DiskANN releases",
+   "url": "https://github.com/Microsoft/DiskANN?lang=fr-ca",
+   "title": "DiskANN3: A Composable Vector Indexing Library",
+   "snippet": "DiskANN3 is a composable library for bringing scalable, accurate and cost-effective vector indexing to multiple databases.",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-02-07T00:00:00Z",
+   "rank": 1,
+   "cited_by": null
+  },
+  {
+   "id": "E9",
+   "engine": "google",
+   "query": "site:github.com microsoft/DiskANN releases",
+   "url": "https://github.com/infinilabs/diskann",
+   "title": "DiskANN in Rust",
+   "snippet": "DiskANN is a suite of scalable, accurate, cost-effective approximate nearest neighbor (ANN) search algorithms for large-scale vector search.",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2025-12-25T00:00:00Z",
+   "rank": 2,
+   "cited_by": null
+  },
+  {
+   "id": "E10",
+   "engine": "google",
+   "query": "site:github.com microsoft/DiskANN releases",
+   "url": "https://github.com/VectorDB-NTU/RaBitQ-Library",
+   "title": "VectorDB-NTU/RaBitQ-Library: An official lightweight ...",
+   "snippet": "An official lightweight library for the RaBitQ algorithm and its applications in vector search. Microsoft DiskANN logo Microsoft DiskANN \u2026 parallel Release ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-09-21T14:26:56.386348Z",
+   "rank": 3,
+   "cited_by": null
+  },
+  {
+   "id": "E11",
+   "engine": "google",
+   "query": "site:github.com microsoft/DiskANN releases",
+   "url": "https://github.com/microsoft/machine-learning-collection",
+   "title": "Machine Learning Collection",
+   "snippet": "Network as of June 28, 2021). (ANN) library. DiskANN - Scalable graph based indices for approximate nearest neighbor search. provides datasets, transforms, ...",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-06-11T00:00:00Z",
+   "rank": 4,
+   "cited_by": null
+  },
+  {
+   "id": "E12",
+   "engine": "google",
+   "query": "site:github.com microsoft/DiskANN releases",
+   "url": "https://github.com/microsoft/ignite25-LAB515-build-advanced-ai-agents-with-postgresql",
+   "title": "microsoft/ignite25-LAB515-build-advanced-ai-agents-with- ...",
+   "snippet": "In this hands-on lab, you'll build an AI-powered legal research assistant. DiskANN indexing for fast vector similarity",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-08-17T00:00:00Z",
+   "rank": 5,
+   "cited_by": null
+  },
+  {
+   "id": "E13",
+   "engine": "google",
+   "query": "site:github.com microsoft/DiskANN releases",
+   "url": "https://github.com/bhakthan/awesome-microsoft-fabric",
+   "title": "bhakthan/awesome-microsoft-fabric",
+   "snippet": "A curated list of awesome Microsoft Fabric resources, updates, blogs, videos and more. Fabric August 2026 Feature. DiskANN Performance Optimization",
+   "source_name": "GitHub",
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-09-18T14:26:56.386451Z",
+   "rank": 6,
+   "cited_by": null
+  },
+  {
+   "id": "E14",
+   "engine": "google_scholar",
+   "query": "hnsw diskann scann nearest neighbor vector search",
+   "url": "https://journals.sagepub.com/doi/abs/10.1177/18724981251388888",
+   "title": "A comparative analysis of graph-based and partition-based approximate nearest neighbor search for large-scale entity resolution",
+   "snippet": "\u2026 partition-based methods, particularly Scann, offer superior \u2026 -based methods like HNSW and DiskANN are unequivocally \u2026 the nearest neighbors for each vector in a target vector space. \u2026 (cited by 1)",
+   "source_name": "D Karapiperis, L Akritidis, P Bozanis\u2026 - Intelligent Decision \u2026, 2025 - journals.sagepub.com",
+   "domain": "journals.sagepub.com",
+   "source_type": "academic",
+   "published": "2025-01-01T00:00:00Z",
+   "rank": 1,
+   "cited_by": 1
+  },
+  {
+   "id": "E15",
+   "engine": "google_scholar",
+   "query": "hnsw diskann scann nearest neighbor vector search",
+   "url": "http://sites.computer.org/debull/A24sept/A24SEPT-CD.pdf#page=22",
+   "title": "The DiskANN library: Graph-Based Indices for Fast, Fresh and Filtered Vector Search.",
+   "snippet": "\u2026 we compare DiskANN to ScaNN [41], a popular partition-\u2026 with HNSW, we also include the full-precision version of \u2026 the DiskANN library for Approximate Nearest Neighbor Search, and \u2026 (cited by 16)",
+   "source_name": "R Krishnaswamy, MD Manohar\u2026 - IEEE Data Eng. Bull \u2026, 2024 - sites.computer.org",
+   "domain": "sites.computer.org",
+   "source_type": "academic",
+   "published": "2024-01-01T00:00:00Z",
+   "rank": 2,
+   "cited_by": 16
+  },
+  {
+   "id": "E16",
+   "engine": "google_scholar",
+   "query": "hnsw diskann scann nearest neighbor vector search",
+   "url": "https://lume.ufrgs.br/handle/10183/298728",
+   "title": "Improving approximate nearest neighbor search in HNSW graphs with data clustering",
+   "snippet": "\u2026 ) and the other three using PGs (HNSW, NSG, and DiskANN). IVF stands out for its low costs in building the index, as it consists only of a linear-complexity vector quantization, but fails in \u2026 (cited by 1)",
+   "source_name": "MAAA Vieira - 2025 - lume.ufrgs.br",
+   "domain": "lume.ufrgs.br",
+   "source_type": "academic",
+   "published": "2025-01-01T00:00:00Z",
+   "rank": 3,
+   "cited_by": 1
+  },
+  {
+   "id": "E17",
+   "engine": "google_scholar",
+   "query": "hnsw diskann scann nearest neighbor vector search",
+   "url": "https://ieeexplore.ieee.org/abstract/document/11081070/",
+   "title": "Zonal HNSW: Scalable approximate nearest neighbor search for billion-scale datasets",
+   "snippet": "\u2026 DiskANN combines quantization and graph \u2026 query vector q using an ANN search on the zone representatives. 3) Conduct Parallel Searches: Perform a parallel nearest neighbor search \u2026 (cited by 3)",
+   "source_name": "A Akhil, G Sivashankar - 2025 3rd International Conference on \u2026, 2025 - ieeexplore.ieee.org",
+   "domain": "ieeexplore.ieee.org",
+   "source_type": "academic",
+   "published": "2025-01-01T00:00:00Z",
+   "rank": 4,
+   "cited_by": 3
+  },
+  {
+   "id": "E18",
+   "engine": "google_scholar",
+   "query": "hnsw diskann scann nearest neighbor vector search",
+   "url": "https://s-space.snu.ac.kr/handle/10371/234121",
+   "title": "Vector Clustering for Disk-based HNSW",
+   "snippet": "\u2026 based index that searches nearest neighbors efficiently by \u2026 At each layer, it performs neighbor-scan, evaluating neighbors \u2026 While extending DiskANN, both still rely on quantization and \u2026",
+   "source_name": "\uc624\uc7ac\uc6d0 - 2026 - s-space.snu.ac.kr",
+   "domain": "s-space.snu.ac.kr",
+   "source_type": "academic",
+   "published": "2026-01-01T00:00:00Z",
+   "rank": 5,
+   "cited_by": null
+  },
+  {
+   "id": "E19",
+   "engine": "google_scholar",
+   "query": "hnsw diskann scann nearest neighbor vector search",
+   "url": "https://ieeexplore.ieee.org/abstract/document/11647349/",
+   "title": "Approximate Nearest Neighbor Search over Temporal Vector Data",
+   "snippet": "\u2026 We briefly review HNSW\u2019s search and construction \u2026 We first scan the current neighbors Lnow and add points valid at t until \u2026 diskann: Graph algorithms for approximate nearest neighbor \u2026",
+   "source_name": "Y Wang, Z He, Y Tong, Z Zhou, Z Ma\u2026 - IEEE Transactions on \u2026, 2026 - ieeexplore.ieee.org",
+   "domain": "ieeexplore.ieee.org",
+   "source_type": "academic",
+   "published": "2026-01-01T00:00:00Z",
+   "rank": 6,
+   "cited_by": null
+  },
+  {
+   "id": "E20",
+   "engine": null,
+   "query": null,
+   "url": "https://pypi.org/project/hnswlib/",
+   "title": "PYPI record for hnswlib",
+   "snippet": "latest version 0.8.0; released 2023-12-03; 148,075 downloads in the last week; no known OSV advisories affect 0.8.0; 2 OSV advisories across all versions (live API)",
+   "source_name": null,
+   "domain": "pypi.org",
+   "source_type": "package_registry",
+   "published": "2023-12-03T04:16:17.550931Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E21",
+   "engine": null,
+   "query": null,
+   "url": "https://github.com/nmslib/hnswlib",
+   "title": "GITHUB record for nmslib/hnswlib",
+   "snippet": "latest version v0.9.0; released 2026-03-28; repository not archived; last push 2026-09-15; 293 open issues+PRs; 5333 stars (live API)",
+   "source_name": null,
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-03-28T22:48:34Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E22",
+   "engine": null,
+   "query": null,
+   "url": "https://github.com/microsoft/DiskANN",
+   "title": "GITHUB record for microsoft/DiskANN",
+   "snippet": "latest version v0.59.0; released 2026-09-11; repository not archived; last push 2026-09-24; 190 open issues+PRs; 1933 stars (live API)",
+   "source_name": null,
+   "domain": "github.com",
+   "source_type": "repository",
+   "published": "2026-09-11T20:15:23Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E23",
+   "engine": null,
+   "query": null,
+   "url": "https://pypi.org/project/scann/",
+   "title": "PYPI record for scann",
+   "snippet": "latest version 1.4.2; released 2025-08-29; 12,457 downloads in the last week; no known OSV advisories affect 1.4.2; 0 OSV advisories across all versions (live API)",
+   "source_name": null,
+   "domain": "pypi.org",
+   "source_type": "package_registry",
+   "published": "2025-08-29T14:32:37.185549Z",
+   "rank": null,
+   "cited_by": null
+  },
+  {
+   "id": "E24",
+   "engine": "google_trends",
+   "query": "python hnswlib,diskann,python scann",
+   "url": "https://trends.google.com/trends/explore?date=today%2012-m&q=python%20hnswlib%2Cdiskann%2Cpython%20scann",
+   "title": "Google Trends: python hnswlib vs diskann vs python scann (past 12 months)",
+   "snippet": "Relative search interest, 0-100. python hnswlib: average interest 0 over the last 3 months (down 100% vs the first 3 months); diskann: average interest 45 over the last 3 months (up 28% vs the first 3 months); python scann: average interest 0 over the last 3 months (down 100% vs the first 3 months)",
+   "source_name": null,
+   "domain": "trends.google.com",
+   "source_type": "other",
+   "published": null,
+   "rank": null,
+   "cited_by": null
+  }
+ ],
+ "registry_facts": [
+  {
+   "subject": "hnswlib",
+   "source": "pypi",
+   "url": "https://pypi.org/project/hnswlib/",
+   "latest_version": "0.8.0",
+   "latest_release": "2023-12-03T04:16:17.550931Z",
+   "archived": null,
+   "last_push": null,
+   "open_issues": null,
+   "stars": null,
+   "deprecated_notice": null,
+   "weekly_downloads": 148075,
+   "vulns_latest": [],
+   "vulns_total": 2,
+   "evidence_id": "E20"
+  },
+  {
+   "subject": "nmslib/hnswlib",
+   "source": "github",
+   "url": "https://github.com/nmslib/hnswlib",
+   "latest_version": "v0.9.0",
+   "latest_release": "2026-03-28T22:48:34Z",
+   "archived": false,
+   "last_push": "2026-09-15T11:56:10Z",
+   "open_issues": 293,
+   "stars": 5333,
+   "deprecated_notice": null,
+   "weekly_downloads": null,
+   "vulns_latest": null,
+   "vulns_total": null,
+   "evidence_id": "E21"
+  },
+  {
+   "subject": "microsoft/DiskANN",
+   "source": "github",
+   "url": "https://github.com/microsoft/DiskANN",
+   "latest_version": "v0.59.0",
+   "latest_release": "2026-09-11T20:15:23Z",
+   "archived": false,
+   "last_push": "2026-09-24T06:12:23Z",
+   "open_issues": 190,
+   "stars": 1933,
+   "deprecated_notice": null,
+   "weekly_downloads": null,
+   "vulns_latest": null,
+   "vulns_total": null,
+   "evidence_id": "E22"
+  },
+  {
+   "subject": "scann",
+   "source": "pypi",
+   "url": "https://pypi.org/project/scann/",
+   "latest_version": "1.4.2",
+   "latest_release": "2025-08-29T14:32:37.185549Z",
+   "archived": null,
+   "last_push": null,
+   "open_issues": null,
+   "stars": null,
+   "deprecated_notice": null,
+   "weekly_downloads": 12457,
+   "vulns_latest": [],
+   "vulns_total": 0,
+   "evidence_id": "E23"
+  }
+ ],
+ "plan": {
+  "intent": "comparison",
+  "subjects": [
+   {
+    "name": "hnswlib",
+    "ecosystem": "pypi",
+    "repo": "nmslib/hnswlib"
+   },
+   {
+    "name": "diskann",
+    "ecosystem": "github",
+    "repo": "microsoft/DiskANN"
+   },
+   {
+    "name": "scann",
+    "ecosystem": "pypi",
+    "repo": "google-research/scann"
+   }
+  ],
+  "searches": [
+   {
+    "engine": "google",
+    "query": "HNSW vs DiskANN vs ScaNN benchmark",
+    "purpose": "Find recent performance comparisons between the three ANN indexes",
+    "recent_only": true
+   },
+   {
+    "engine": "google",
+    "query": "site:github.com nmslib/hnswlib releases",
+    "purpose": "Check latest releases/changelog for hnswlib",
+    "recent_only": true
+   },
+   {
+    "engine": "google",
+    "query": "site:github.com microsoft/DiskANN releases",
+    "purpose": "Check latest releases/changelog for DiskANN",
+    "recent_only": true
+   },
+   {
+    "engine": "google",
+    "query": "site:github.com google-research/scann releases",
+    "purpose": "Check latest releases/changelog for ScaNN",
+    "recent_only": true
+   },
+   {
+    "engine": "google_news",
+    "query": "Python hnswlib library news",
+    "purpose": "Find news articles or blog posts discussing the current status of hnswlib",
+    "recent_only": true
+   },
+   {
+    "engine": "google_scholar",
+    "query": "hnsw diskann scann nearest neighbor vector search",
+    "purpose": "Peer-reviewed evidence and citation counts (added by code: research question with no Scholar search)",
+    "recent_only": true
+   }
+  ],
+  "rationale": "The question asks whether HNSW remains the top ANN index or if newer ones like DiskANN or ScaNN have overtaken it, which is a comparison intent. The relevant subjects are the three libraries implementing these algorithms. Searches cover recent benchmark results, official release notes (primary sources) for each library, and independent news/blog coverage to gauge community perception and recent developments. Recent_only is set true because the field evolves quickly and up\u2011to\u2011date information is "
+ },
+ "comparison": {
+  "subjects": [
+   "hnswlib",
+   "diskann",
+   "scann"
+  ],
+  "rows": [
+   {
+    "metric": "Latest version",
+    "values": [
+     "0.8.0",
+     "0.59.0",
+     "1.4.2"
+    ],
+    "citations": [
+     "E20",
+     "E22",
+     "E23"
+    ]
+   },
+   {
+    "metric": "Latest release",
+    "values": [
+     "2023-12-03",
+     "2026-09-11",
+     "2025-08-29"
+    ],
+    "citations": [
+     "E20",
+     "E22",
+     "E23"
+    ]
+   },
+   {
+    "metric": "Last push (GitHub)",
+    "values": [
+     "2026-09-15",
+     "2026-09-24",
+     "-"
+    ],
+    "citations": [
+     "E21",
+     "E22"
+    ]
+   },
+   {
+    "metric": "Archived",
+    "values": [
+     "no",
+     "no",
+     "-"
+    ],
+    "citations": [
+     "E21",
+     "E22"
+    ]
+   },
+   {
+    "metric": "GitHub stars",
+    "values": [
+     "5,333",
+     "1,933",
+     "-"
+    ],
+    "citations": [
+     "E21",
+     "E22"
+    ]
+   },
+   {
+    "metric": "Downloads, last week",
+    "values": [
+     "148,075",
+     "-",
+     "12,457"
+    ],
+    "citations": [
+     "E20",
+     "E23"
+    ]
+   },
+   {
+    "metric": "OSV advisories on latest",
+    "values": [
+     "0",
+     "-",
+     "0"
+    ],
+    "citations": [
+     "E20",
+     "E23"
+    ]
+   },
+   {
+    "metric": "Search interest, last 3 months (Trends)",
+    "values": [
+     "0 (down 100%)",
+     "45 (up 28%)",
+     "0 (down 100%)"
+    ],
+    "citations": [
+     "E24"
+    ]
+   }
+  ]
+ },
+ "trends": {
+  "terms": [
+   "python hnswlib",
+   "diskann",
+   "python scann"
+  ],
+  "dates": [
+   "Sep 21\u2009\u2013\u200927, 2025",
+   "Sep 28\u2009\u2013\u2009Oct 4, 2025",
+   "Oct 5\u2009\u2013\u200911, 2025",
+   "Oct 12\u2009\u2013\u200918, 2025",
+   "Oct 19\u2009\u2013\u200925, 2025",
+   "Oct 26\u2009\u2013\u2009Nov 1, 2025",
+   "Nov 2\u2009\u2013\u20098, 2025",
+   "Nov 9\u2009\u2013\u200915, 2025",
+   "Nov 16\u2009\u2013\u200922, 2025",
+   "Nov 23\u2009\u2013\u200929, 2025",
+   "Nov 30\u2009\u2013\u2009Dec 6, 2025",
+   "Dec 7\u2009\u2013\u200913, 2025",
+   "Dec 14\u2009\u2013\u200920, 2025",
+   "Dec 21\u2009\u2013\u200927, 2025",
+   "Dec 28, 2025\u2009\u2013\u2009Jan 3, 2026",
+   "Jan 4\u2009\u2013\u200910, 2026",
+   "Jan 11\u2009\u2013\u200917, 2026",
+   "Jan 18\u2009\u2013\u200924, 2026",
+   "Jan 25\u2009\u2013\u200931, 2026",
+   "Feb 1\u2009\u2013\u20097, 2026",
+   "Feb 8\u2009\u2013\u200914, 2026",
+   "Feb 15\u2009\u2013\u200921, 2026",
+   "Feb 22\u2009\u2013\u200928, 2026",
+   "Mar 1\u2009\u2013\u20097, 2026",
+   "Mar 8\u2009\u2013\u200914, 2026",
+   "Mar 15\u2009\u2013\u200921, 2026",
+   "Mar 22\u2009\u2013\u200928, 2026",
+   "Mar 29\u2009\u2013\u2009Apr 4, 2026",
+   "Apr 5\u2009\u2013\u200911, 2026",
+   "Apr 12\u2009\u2013\u200918, 2026",
+   "Apr 19\u2009\u2013\u200925, 2026",
+   "Apr 26\u2009\u2013\u2009May 2, 2026",
+   "May 3\u2009\u2013\u20099, 2026",
+   "May 10\u2009\u2013\u200916, 2026",
+   "May 17\u2009\u2013\u200923, 2026",
+   "May 24\u2009\u2013\u200930, 2026",
+   "May 31\u2009\u2013\u2009Jun 6, 2026",
+   "Jun 7\u2009\u2013\u200913, 2026",
+   "Jun 14\u2009\u2013\u200920, 2026",
+   "Jun 21\u2009\u2013\u200927, 2026",
+   "Jun 28\u2009\u2013\u2009Jul 4, 2026",
+   "Jul 5\u2009\u2013\u200911, 2026",
+   "Jul 12\u2009\u2013\u200918, 2026",
+   "Jul 19\u2009\u2013\u200925, 2026",
+   "Jul 26\u2009\u2013\u2009Aug 1, 2026",
+   "Aug 2\u2009\u2013\u20098, 2026",
+   "Aug 9\u2009\u2013\u200915, 2026",
+   "Aug 16\u2009\u2013\u200922, 2026",
+   "Aug 23\u2009\u2013\u200929, 2026",
+   "Aug 30\u2009\u2013\u2009Sep 5, 2026",
+   "Sep 6\u2009\u2013\u200912, 2026",
+   "Sep 13\u2009\u2013\u200919, 2026",
+   "Sep 20\u2009\u2013\u200926, 2026"
+  ],
+  "values": [
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    8,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    16,
+    0,
+    0,
+    0,
+    8,
+    8,
+    0,
+    0,
+    0,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    39,
+    32,
+    24,
+    42,
+    36,
+    36,
+    45,
+    37,
+    38,
+    47,
+    28,
+    17,
+    42,
+    18,
+    18,
+    30,
+    24,
+    33,
+    30,
+    46,
+    31,
+    27,
+    37,
+    40,
+    35,
+    42,
+    47,
+    50,
+    51,
+    57,
+    52,
+    44,
+    46,
+    68,
+    77,
+    79,
+    63,
+    74,
+    100,
+    81,
+    65,
+    70,
+    70,
+    92,
+    73,
+    66,
+    43,
+    20,
+    19,
+    16,
+    20,
+    13,
+    24
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    9,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  ],
+  "url": "https://trends.google.com/trends/explore?date=today%2012-m&q=python%20hnswlib%2Cdiskann%2Cpython%20scann"
+ },
+ "gaps": [
+  "Unconfirmed claim (no cited source contains '333'): The hnswlib repository has high community engagement (5\u202f333 stars, recent pushes) despite declining search interest, reflecting strong historical adoption",
+  "Only weak support (1 independent domain(s)): Microsoft\u2019s 1\u2011billion\u2011vector benchmark found DiskANN achieved 95% recall with ~3\u202fms latency using only 64\u202fGB RAM\u202f+\u202fSSD, outperforming HNSW on the same task",
+  "Only weak support (1 independent domain(s)): HNSW\u2019s recall degrades faster as corpus size grows, whereas ScaNN handled roughly twice as many queries per second in production tests",
+  "Only weak support (1 independent domain(s)): DiskANN supports up to 16\u202f000 vector dimensions, while HNSW tops out around 2\u202f000 dimensions",
+  "Only weak support (1 independent domain(s)): Google Trends data from the past year shows search interest rising for DiskANN (average 45) while interest for hnswlib and ScaNN dropped to near zero",
+  "Open question: How do these indexes compare on mixed metric types (e.g., cosine vs inner\u2011product) across diverse hardware configurations?"
+ ],
+ "followups": [
+  {
+   "engine": "google",
+   "query": "hnswlib stars site:github.com",
+   "purpose": "follow-up: verify the claimed 5,333 star count and recent activity of the hnswlib repository",
+   "recent_only": false
+  },
+  {
+   "engine": "google",
+   "query": "DiskANN 1 billion vectors benchmark 95% recall 3 ms site:microsoft.com",
+   "purpose": "follow-up: confirm Microsoft\u2019s 1\u2011billion\u2011vector benchmark results for DiskANN (recall, latency, RAM+SSD usage)",
+   "recent_only": true
+  }
+ ],
+ "searches_used": 5,
+ "cache_hits": 5,
+ "dropped_claims": 0,
+ "pages_read": 4,
+ "claims_page_verified": 6,
+ "claims_unconfirmed": 0,
+ "unlinked_citations": 0,
+ "model": "openai/gpt-oss-120b",
+ "generated_at": "2026-09-24T14:27:57.744380Z"
+}

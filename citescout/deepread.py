@@ -36,6 +36,7 @@ with within would you your also only about after again against all any because b
 each few further here just less many newer older other own still even per via using used uses use now new""".split())
 _ID = re.compile(r"\[?\bE\d+\b\]?")
 _VERSION = re.compile(r"\bv?\d+(?:\.\d+){1,3}\b")
+_SEP = re.compile(r"(?<=\d)[ ,\u00a0\u202f\u2009](?=\d{3}(?!\d))")  # 16 000 / 16,000 -> 16000
 _NUMBER = re.compile(r"(?<![\w.])\d{2,}(?:,\d{3})*(?![\w.])")
 
 
@@ -75,7 +76,7 @@ def _norm(text: str) -> str:
 
 def hard_facts(claim_text: str) -> list[str]:
     """Version strings and multi-digit numbers the claim asserts (citation markers excluded)."""
-    text = _ID.sub(" ", claim_text)
+    text = _SEP.sub("", _ID.sub(" ", claim_text))
     facts = [v.lstrip("v") for v in _VERSION.findall(text)]
     rest = _VERSION.sub(" ", text)
     facts += [n.replace(",", "") for n in _NUMBER.findall(rest)]
@@ -90,8 +91,10 @@ def keywords(claim_text: str) -> list[str]:
 def _has_fact(norm_text: str, fact: str) -> bool:
     if "." in fact:
         return re.search(rf"(?<![0-9.])v?{re.escape(fact)}(?![0-9])", norm_text) is not None
-    compact = norm_text.replace(",", "")
-    return re.search(rf"(?<![0-9]){re.escape(fact)}(?![0-9])", compact) is not None
+    pat = re.compile(rf"(?<![0-9]){re.escape(fact)}(?![0-9])")
+    # "16 000" on the page matches 16000, but collapsing separators can also glue unrelated
+    # neighbours ("2026 09 21 355 issues"), so the plain text is always checked too.
+    return any(pat.search(t) for t in (norm_text.replace(",", ""), _SEP.sub("", norm_text).replace(",", "")))
 
 
 @dataclass

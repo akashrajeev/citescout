@@ -1,0 +1,47 @@
+[
+ {
+  "question": "Is HNSW still the best approximate nearest neighbor index for vector search, or have newer indexes like DiskANN or ScaNN overtaken it?",
+  "claims": 8,
+  "citations_valid": 1.0,
+  "page_verified": 6,
+  "snippet_only": 2,
+  "unconfirmed": 0,
+  "dropped": 0,
+  "unlinked": 0,
+  "contradictions": 0,
+  "planted": 3,
+  "caught": 3,
+  "followups": 2,
+  "comparison_rows": 8
+ },
+ {
+  "question": "Is moment.js still maintained, or should I move to date-fns or Day.js?",
+  "claims": 8,
+  "citations_valid": 1.0,
+  "page_verified": 7,
+  "snippet_only": 0,
+  "unconfirmed": 1,
+  "dropped": 0,
+  "unlinked": 0,
+  "contradictions": 2,
+  "planted": 3,
+  "caught": 3,
+  "followups": 2,
+  "comparison_rows": 8
+ },
+ {
+  "question": "Is the Python requests library still maintained, or should I switch to httpx?",
+  "claims": 6,
+  "citations_valid": 1.0,
+  "page_verified": 6,
+  "snippet_only": 0,
+  "unconfirmed": 0,
+  "dropped": 2,
+  "unlinked": 2,
+  "contradictions": 2,
+  "planted": 6,
+  "caught": 6,
+  "followups": 2,
+  "comparison_rows": 7
+ }
+]

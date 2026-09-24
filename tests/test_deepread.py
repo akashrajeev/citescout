@@ -74,3 +74,10 @@ def test_facts_may_come_from_different_api_records():
     assert check_claim(c, {"E22": pypi, "E23": gh}, {})[0] == "page"
     wrong = Claim(text="Requests 2.35.0 was released on 2026-05-14.", citations=["E22"])
     assert check_claim(wrong, {"E22": pypi}, {})[0] == "unconfirmed"
+
+
+def test_separator_collapsing_does_not_hide_dates():
+    gh = ev(24, "https://github.com/psf/requests", "GITHUB record for psf/requests",
+            "last push 2026-09-21; 355 open issues+PRs (live API)", engine=None, st=SourceType.REPOSITORY)
+    c = Claim(text="The Requests repository was last pushed to on 2026\u201109\u201121.", citations=["E24"])
+    assert check_claim(c, {"E24": gh}, {})[0] == "page"
