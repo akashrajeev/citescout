@@ -36,6 +36,8 @@ def ask(q: str = Query(..., min_length=5, max_length=300), max_searches: int = 6
         try:
             settings = load_settings(max_searches=max(1, min(max_searches, 10)))
             brief = ResearchAgent(settings, trace=lambda e, d: events.put((e, d))).run(q)
+            from citescout import history
+            history.save(brief, settings.cache_dir)
             data = brief.model_dump(mode="json")
             data["markdown"] = to_markdown(brief)
             events.put(("brief", data))
@@ -52,6 +54,15 @@ def ask(q: str = Query(..., min_length=5, max_length=300), max_searches: int = 6
             yield f"event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
 
     return StreamingResponse(stream(), media_type="text/event-stream")
+
+
+@app.get("/api/history")
+def recent() -> list[dict]:
+    """Questions with saved briefs, newest first. Re-asking one replays cached searches (0 credits)."""
+    from citescout import history
+
+    return [{"question": q, "runs": n, "last": at.isoformat()}
+            for q, n, at in history.list_questions(load_settings().cache_dir)[:12]]
 
 
 def main() -> None:

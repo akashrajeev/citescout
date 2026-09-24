@@ -118,6 +118,7 @@
     <input id="q" placeholder="e.g. Is the Python requests library still maintained, or should I switch to httpx?" autocomplete="off">
     <button id="go">Research</button>
   </form>
+  <div id="recent" style="font-size:12.5px;margin:6px 0 0"></div>
 </div>
 <main class="wrap">
   <section class="card"><p class="kicker">Agent trace</p><div id="trace"><div class="muted">Waiting for a question.</div></div></section>
@@ -177,7 +178,22 @@ function render(b){
   h += `</table><div class="stats"><span><b>${b.searches_used}</b> live SerpApi searches</span><span><b>${b.cache_hits}</b> served from cache</span>
     <span><b>${b.evidence.length}</b> sources gathered</span><span><b>${b.claims_page_verified ?? 0}/${b.claims.length}</b> claims verified on the full page (${b.pages_read ?? 0} pages read)</span><span><b>${b.dropped_claims}</b> unsupported claims dropped</span><span><b>${b.unlinked_citations ?? 0}</b> off-subject citations unlinked</span><span>${esc(b.model)}</span></div></div>`;
   if (b.open_questions.length) h += `<div class="card"><p class="kicker">Open questions</p><ul>${b.open_questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;
+  h += `<div class="card"><p class="kicker">Export</p><button type="button" id="dl-md">Download Markdown</button> <button type="button" id="dl-json">Download JSON</button></div>`;
   $("#out").innerHTML = h;
+  const slug = b.question.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
+  const save = (text, type, ext) => { const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], {type})); a.download = `${slug}.${ext}`; a.click(); };
+  $("#dl-md").onclick = () => save(b.markdown || "", "text/markdown", "md");
+  $("#dl-json").onclick = () => { const {markdown, ...rest} = b; save(JSON.stringify(rest, null, 2), "application/json", "json"); };
+  loadRecent();
+}
+function loadRecent(){
+  fetch("/api/history").then(r => r.json()).then(items => {
+    const el = $("#recent"); if (!el || !items.length) return;
+    el.innerHTML = `<span class="muted">Recent (cached, free to re-run):</span> ` + items.map(i =>
+      `<a href="#" class="recent-q" data-q="${esc(i.question)}">${esc(i.question.length > 70 ? i.question.slice(0, 70) + "…" : i.question)}</a>`).join(" · ");
+    el.querySelectorAll(".recent-q").forEach(a => a.onclick = ev => { ev.preventDefault(); $("#q").value = a.dataset.q; });
+  }).catch(() => {});
 }
 $("#f").onsubmit = ev => {
   ev.preventDefault();
@@ -212,6 +228,7 @@ $("#f").onsubmit = ev => {
   es.addEventListener("brief", m => { render(JSON.parse(m.data)); es.close(); $("#go").disabled = false; });
   es.addEventListener("error", m => { if (m.data) line(`<span class="err">${esc(JSON.parse(m.data).message)}</span>`); es.close(); $("#go").disabled = false; });
 };
+loadRecent();
 </script>
 </body>
 </html>

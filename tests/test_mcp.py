@@ -54,3 +54,14 @@ def test_server_registers_both_tools():
     tools = asyncio.run(build_server().list_tools())
     assert {t.name for t in tools} == {"research", "serpapi_credits"}
     assert brief_payload(_brief("q"))["claims"][0]["confidence"] == "medium"
+
+
+def test_web_history_endpoint(tmp_path, monkeypatch):
+    pytest.importorskip("fastapi")
+    from fastapi.testclient import TestClient
+    from citescout import history
+    from citescout.web.app import app
+    monkeypatch.setenv("CITESCOUT_CACHE_DIR", str(tmp_path))
+    history.save(_brief("Is HNSW still the best ANN index?"), tmp_path)
+    r = TestClient(app).get("/api/history")
+    assert r.status_code == 200 and r.json()[0]["question"] == "Is HNSW still the best ANN index?"
