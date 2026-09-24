@@ -40,7 +40,8 @@ def to_console(brief: Brief, console: Console) -> None:
     t.add_column("Read", width=6)
     for c in brief.claims:
         t.add_row(Text(c.confidence.value, style=_CONF_STYLE[c.confidence]), _cite_text(c.text),
-                  ", ".join(c.citations), Text(_READ_MARK.get(c.verification or "", "-"),
+                  ", ".join(c.citations), Text("✓ API" if c.verification == "page" and "live API" in c.verification_detail
+                                               else _READ_MARK.get(c.verification or "", "-"),
                                                style=_READ_STYLE.get(c.verification or "", "dim")))
     console.print(t)
 

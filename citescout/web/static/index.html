@@ -151,7 +151,7 @@ function render(b){
   h += `<div class="card"><p class="kicker">Claims · checked</p><table><tr><th>Confidence</th><th>Claim</th><th>Sources</th><th>Read</th></tr>`;
   for (const c of b.claims) h += `<tr><td><span class="conf ${c.confidence}" title="${esc(c.confidence_reason)}">${c.confidence}</span></td>
      <td>${esc(c.text)}</td><td>${c.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank" title="${esc(urls[i])}">${i}</a>`).join(" ")}</td>
-     <td><span class="read ${c.verification||'none'}" title="${esc(c.verification_detail||'')}">${({page:"✓ page",snippet:"~ snippet",unconfirmed:"✗ not found"})[c.verification]||"-"}</span></td></tr>`;
+     <td><span class="read ${c.verification||'none'}" title="${esc(c.verification_detail||'')}">${c.verification==="page" && (c.verification_detail||"").includes("live API") ? "✓ API" : ({page:"✓ page",snippet:"~ snippet",unconfirmed:"✗ not found"})[c.verification]||"-"}</span></td></tr>`;
   h += `</table></div>`;
   if (b.comparison){
     const cm = b.comparison;
