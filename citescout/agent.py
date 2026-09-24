@@ -14,7 +14,7 @@ from citescout import registry
 from citescout.checks import rule_contradictions, score_claims
 from citescout.config import Settings
 from citescout.llm import LLM
-from citescout.models import Brief, Evidence, SearchTask
+from citescout.models import Brief, Evidence, Plan, SearchTask
 from citescout.planner import make_plan
 from citescout.serp import SerpSearcher
 from citescout.synthesize import registry_evidence, synthesize, validate
@@ -67,7 +67,8 @@ def _dedupe(evidence: list[Evidence]) -> list[Evidence]:
 
 class ResearchAgent:
     def __init__(self, settings: Settings, llm: LLM | None = None, searcher: SerpSearcher | None = None,
-                 trace: Trace | None = None) -> None:
+                 trace: Trace | None = None, replan: bool = False) -> None:
+        self.replan = replan
         self.settings = settings
         self.llm = llm or LLM(settings.require_llm(), settings.llm_base_url, settings.llm_model,
                               settings.llm_fallback_model)
@@ -75,10 +76,26 @@ class ResearchAgent:
                                                  settings.max_searches, settings.offline)
         self.trace = trace or _noop
 
+    def _plan(self, question: str) -> Plan:
+        """Reuse the saved plan for a question we've seen, so a re-run hits the SerpApi cache
+        for every search (0 credits) and --offline can replay a whole run."""
+        import hashlib
+
+        key = hashlib.sha256(" ".join(question.lower().split()).encode()).hexdigest()[:16]
+        path = self.settings.cache_dir / "plans" / f"{key}.json"
+        if path.exists() and not self.replan:
+            plan = Plan.model_validate_json(path.read_text())
+            if len(plan.searches) <= self.settings.max_searches:
+                return plan
+        plan = make_plan(self.llm, question, self.settings.max_searches)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(plan.model_dump_json(indent=1))
+        return plan
+
     def run(self, question: str) -> Brief:
         t = self.trace
         t("plan.start", {"question": question})
-        plan = make_plan(self.llm, question, self.settings.max_searches)
+        plan = self._plan(question)
         t("plan.done", {"plan": plan.model_dump(mode="json")})
 
         # --- SerpApi searches, in parallel -------------------------------------------

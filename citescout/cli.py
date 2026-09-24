@@ -56,6 +56,7 @@ def main(argv: list[str] | None = None) -> int:
     ask.add_argument("question")
     ask.add_argument("--max-searches", type=int, default=None, help="SerpApi credit cap for this question")
     ask.add_argument("--offline", action="store_true", help="Use cached SerpApi results only (0 credits)")
+    ask.add_argument("--replan", action="store_true", help="Ignore the saved plan for this question")
     ask.add_argument("--markdown", type=Path, help="Also write the brief as Markdown")
     ask.add_argument("--json", type=Path, help="Also write the full brief as JSON")
     sub.add_parser("budget", help="Show SerpApi credits left (Account API, free)")
@@ -69,7 +70,7 @@ def main(argv: list[str] | None = None) -> int:
                           f"{acct.get('searches_per_month')} searches left this month")
             return 0
         s = load_settings(offline=args.offline, max_searches=args.max_searches)
-        brief = ResearchAgent(s, trace=_trace).run(args.question)
+        brief = ResearchAgent(s, trace=_trace, replan=args.replan).run(args.question)
     except ConfigError as e:
         console.print(f"[red]{e}[/red]")
         return 2
