@@ -22,7 +22,7 @@ run("-i", "v2-seg1.mp4", "-i", "v2-seg2.mp4", "-filter_complex", "[0:v]fps=25[a]
     "-map", "[v]", "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "vo2/silent.mp4")
 beats = [float(l.split("\t")[0]) for l in open("beats.txt") if l.split("\t")[1].strip() not in ("end", "export")]  # line 12 covers evidence + export
 s1 = dur("v2-seg1.mp4")
-cuts = [0.0] + beats[1:] + [s1, s1 + float(sys.argv[1]), dur("vo2/silent.mp4")]
+cuts = [max(0.0, beats[0] - 0.2)] + beats[1:] + [s1, s1 + float(sys.argv[1]), dur("vo2/silent.mp4")]  # start at the loaded page
 n = len(cuts) - 1
 lines = [f"../../vo/cs2-vo-line{i}.wav" for i in range(1, n + 1)]
 os.chdir("vo2")

@@ -12,7 +12,7 @@ pkill -f 'google-chrome' 2>/dev/null; pkill -f xfce4-terminal 2>/dev/null; sleep
 T0=$(date +%s.%N); FFPID=$(rec_start demo/out/v2-seg1.mp4)
 python demo/record_web_v2.py "Is the Python requests library still maintained, or should I switch to httpx?" "$T0"
 rec_stop "$FFPID"; pkill -f 'google-chrome' 2>/dev/null; sleep 1
-xfce4-terminal --maximize --hide-menubar --hide-borders --hide-scrollbar --font='Monospace 15' -x bash "$PWD/demo/terminal_v2.sh" &
+xfce4-terminal --geometry=84x30+0+0 --hide-menubar --hide-borders --hide-scrollbar --font='Monospace 19' -x bash "$PWD/demo/terminal_v2.sh" &
 sleep 2
 FFPID=$(rec_start demo/out/v2-seg2.mp4)
 while pgrep -f 'demo/terminal_v2.sh' > /dev/null; do sleep 1; done

@@ -4,6 +4,7 @@ Logs the time of every caption change to demo/out/beats.txt so the voiceover can
 onto the same cut points.
 """
 
+import subprocess
 import sys
 import time
 
@@ -23,9 +24,14 @@ def scroll_to(page, kicker: str) -> None:
 
 def main() -> None:
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path="/usr/bin/google-chrome", headless=False,
-                                    args=["--start-maximized", "--no-first-run", "--no-default-browser-check", "--disable-infobars"])
-        page = browser.new_page(no_viewport=True)
+        # Real kiosk window (no tabs or URL bar) filling the 1280x800 frame; Playwright attaches over CDP.
+        chrome = subprocess.Popen(["/usr/bin/google-chrome", "--kiosk", "--window-position=0,0", "--window-size=1280,800",
+                                   "--no-first-run", "--no-default-browser-check", "--disable-infobars",
+                                   "--remote-debugging-port=9333", "--user-data-dir=/tmp/citescout-demo-chrome",
+                                   "about:blank"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        time.sleep(3)
+        browser = p.chromium.connect_over_cdp("http://127.0.0.1:9333")
+        page = browser.contexts[0].pages[0]
         page.wait_for_timeout(1500)
 
         def cap(name: str, text: str) -> None:
@@ -35,7 +41,7 @@ def main() -> None:
 
         page.goto("http://127.0.0.1:8000/")
         cap("intro", "citescout: a developer research agent that is not allowed to show you an unsourced claim. Powered by SerpApi.")
-        time.sleep(3)
+        time.sleep(9.7)
         cap("ask", "Running locally. Ask a real developer question:")
         page.click("#q")
         page.keyboard.type(QUESTION, delay=30)
@@ -51,32 +57,33 @@ def main() -> None:
         page.wait_for_selector("#verdict", timeout=180000)
         time.sleep(1)
         cap("verdict", "Verdict with inline citations: each [E#] opens the exact source")
-        time.sleep(4)
+        time.sleep(7.2)
         scroll_to(page, "Claims")
         cap("deepread", "Deep-read: every version, number and date in a claim is checked against the full cited page or a live API record")
-        time.sleep(7)
+        time.sleep(13.6)
         scroll_to(page, "Side by side")
         cap("compare", "Side by side, built in code from primary data only. Every cell cites its record.")
-        time.sleep(5)
+        time.sleep(9.9)
         page.evaluate("[...document.querySelectorAll('#out .kicker')].find(h => h.textContent.startsWith('Google Trends'))"
                       "?.scrollIntoView({behavior: 'smooth', block: 'center'})")
         cap("trends", "Search interest over 12 months from SerpApi's Google Trends engine")
-        time.sleep(5)
+        time.sleep(6.5)
         if page.query_selector(".disagree"):
             scroll_to(page, "Sources disagree")
             cap("disagree", "Where sources disagree, citescout says so, and which side the evidence favours")
-            time.sleep(6)
+            time.sleep(7.3)
         scroll_to(page, "Round 2")
         cap("gaps", "The gaps from the first draft, and the follow-up searches they turned into")
-        time.sleep(6)
+        time.sleep(6.2)
         scroll_to(page, "Evidence")
         cap("evidence", "Every source is typed, with the engine that found it. Cached re-runs cost 0 credits.")
-        time.sleep(5)
+        time.sleep(5.5)
         page.evaluate("window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})")
         cap("export", "Export the brief as Markdown or JSON")
-        time.sleep(3)
+        time.sleep(3.6)
         cap("end", "")
         browser.close()
+        chrome.terminate()
 
 
 if __name__ == "__main__":
