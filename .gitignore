@@ -11,3 +11,5 @@ build/
 !.env.example
 .citescout_cache/
 runs/
+demo/out/
+.citescout_cache/

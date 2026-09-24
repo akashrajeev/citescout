@@ -3,77 +3,158 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>citescout - cited answers for developers</title>
+<title>citescout — cited answers for developers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0f1117; --panel:#171a23; --line:#262b38; --text:#e6e8ee; --dim:#8a90a2; --cyan:#5ad1e8;
-          --green:#4ade80; --yellow:#facc15; --red:#f87171; --mag:#c084fc; }
+  :root {
+    --paper:#f6f3ed; --card:#ffffff; --ink:#1b1a17; --ink2:#4a463f; --faint:#8b8578;
+    --line:#e7e1d5; --line2:#d9d2c2;
+    --accent:#b3530f; --accent-soft:#fdf1e7; --accent-line:#ecc9ac;
+    --strong:#2e7d4f; --moderate:#a1730a; --weak:#b33a2b;
+    --code-bg:#201e19; --code-ink:#e8e2d5;
+  }
   * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-  header { padding:22px 32px 8px; display:flex; align-items:baseline; gap:14px; }
-  header h1 { margin:0; font-size:22px; letter-spacing:.3px; }
-  header span { color:var(--dim); }
-  form { display:flex; gap:10px; padding:10px 32px 18px; }
-  input { flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 14px; font-size:15px; }
-  button { background:var(--cyan); color:#05232a; border:0; border-radius:10px; padding:0 20px; font-weight:600; cursor:pointer; }
-  button:disabled { opacity:.5; cursor:default; }
-  main { display:grid; grid-template-columns: 380px 1fr; gap:18px; padding:0 32px 40px; }
-  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
-  .panel h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); }
-  #trace div { font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; padding:3px 0; border-bottom:1px dashed #20242f; }
-  .eng { color:var(--mag); } .ok { color:var(--green); } .err { color:var(--red); } .muted { color:var(--dim); }
-  #verdict { font-size:16px; }
-  .cite { color:var(--cyan); text-decoration:none; font-weight:600; font-size:12px; vertical-align:super; margin-left:1px; }
-  table { width:100%; border-collapse:collapse; margin-top:6px; }
-  td, th { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top; font-size:14px; }
-  th { color:var(--dim); font-weight:500; font-size:12px; text-transform:uppercase; }
-  .conf { font-size:12px; font-weight:700; text-transform:uppercase; }
-  .high { color:var(--green); } .medium { color:var(--yellow); } .low { color:var(--red); }
-  .disagree { border-color:#5b2b2b; }
-  .disagree li { margin:4px 0; }
-  .res { color:var(--dim); font-style:italic; }
-  .tag { display:inline-block; font-size:11px; padding:1px 7px; border-radius:99px; background:#222838; color:var(--dim); margin-right:4px; }
-  .stats { color:var(--dim); font-size:13px; margin-top:10px; }
-  #out > .panel { margin-bottom:16px; }
-  a { color:var(--cyan); }
+  body { margin:0; background:var(--paper); color:var(--ink);
+         font:15px/1.55 "Inter", system-ui, -apple-system, sans-serif; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+
+  /* masthead */
+  header { border-bottom: 1px solid var(--line2); }
+  .bar { display:flex; align-items:center; gap:14px; padding:18px 0 0; }
+  .mark { width:34px; height:34px; flex:none; }
+  .brand { font:600 21px/1 "Fraunces", Georgia, serif; letter-spacing:-.01em; }
+  .brand em { font-style: normal; color: var(--accent); }
+  .byline { margin-left:auto; color:var(--faint); font-size:12.5px; display:flex; align-items:center; gap:7px; }
+  .byline b { color:var(--ink2); font-weight:600; }
+  .dot { width:4px; height:4px; border-radius:50%; background:var(--faint); opacity:.6; }
+
+  /* hero */
+  .hero { padding: 26px 0 24px; }
+  .hero h1 { margin:0 0 6px; font:500 30px/1.2 "Fraunces", Georgia, serif; letter-spacing:-.015em; }
+  .hero p { margin:0 0 18px; color:var(--ink2); max-width:640px; }
+  form { display:flex; gap:10px; max-width:820px; }
+  #q { flex:1; background:var(--card); border:1px solid var(--line2); border-radius:10px;
+       padding:13px 16px; font:15px "Inter",sans-serif; color:var(--ink); transition:border-color .15s, box-shadow .15s; }
+  #q:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  #go { background:var(--ink); color:#fdfcf8; border:0; border-radius:10px; padding:0 22px;
+        font:600 14.5px "Inter",sans-serif; cursor:pointer; transition:background .15s; }
+  #go:hover { background:#000; }
+  #go:disabled { opacity:.45; cursor:default; }
+
+  /* layout */
+  main { display:grid; grid-template-columns: 400px 1fr; gap:20px; padding: 22px 0 56px; align-items:start; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+          box-shadow:0 1px 2px rgba(27,26,23,.05); padding:18px 20px; animation:rise .35s ease both; }
+  @keyframes rise { from { opacity:0; transform:translateY(6px); } }
+  .kicker { margin:0 0 12px; font:600 11px/1 "JetBrains Mono",monospace; text-transform:uppercase;
+            letter-spacing:.14em; color:var(--faint); display:flex; align-items:center; gap:8px; }
+  .kicker::after { content:""; flex:1; border-top:1px solid var(--line); }
+
+  /* trace */
+  #trace { font:12.5px/1.6 "JetBrains Mono",monospace; }
+  #trace > div { padding:5px 0 5px 16px; position:relative; color:var(--ink2); border-bottom:1px dashed #f0ebdf; }
+  #trace > div::before { content:"›"; position:absolute; left:0; color:var(--faint); }
+  #trace b { color:var(--ink); font-weight:600; }
+  .eng { color:var(--accent); font-weight:600; }
+  .ok { color:var(--strong); font-weight:600; }
+  .err { color:var(--weak); font-weight:600; }
+  .muted { color:var(--faint); }
+  .busy { color:var(--accent); }
+  .busy::after { content:""; display:inline-block; width:.9em; animation:dots 1.2s steps(4) infinite; }
+  @keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} }
+
+  /* results */
+  #out > .card { margin-bottom:18px; }
+  #verdict { font:500 19px/1.5 "Fraunces", Georgia, serif; letter-spacing:-.005em; }
+  .cite { display:inline-block; font:600 10.5px/1 "JetBrains Mono",monospace; color:var(--accent);
+          background:var(--accent-soft); border:1px solid var(--accent-line); border-radius:5px;
+          padding:2px 4px; margin:0 1px; text-decoration:none; vertical-align:super; transition:background .12s; }
+  .cite:hover { background:#f8e2cd; }
+  table { width:100%; border-collapse:collapse; }
+  td, th { text-align:left; padding:10px 10px 10px 0; border-bottom:1px solid var(--line); vertical-align:top; font-size:13.5px; }
+  tr:last-child td { border-bottom:0; }
+  th { color:var(--faint); font:600 10.5px "JetBrains Mono",monospace; text-transform:uppercase; letter-spacing:.12em; }
+  .conf { font:600 10.5px "JetBrains Mono",monospace; text-transform:uppercase; letter-spacing:.08em;
+          border-radius:99px; padding:3px 9px; white-space:nowrap; }
+  .conf.high { color:var(--strong); background:#e8f4ec; }
+  .conf.medium { color:var(--moderate); background:#faf3e1; }
+  .conf.low { color:var(--weak); background:#fae9e6; }
+  .disagree { border:1px solid #eccfc8; background:#fdf8f5; }
+  .disagree .kicker { color:var(--weak); }
+  .disagree li { margin:5px 0; }
+  .res { margin-top:6px; padding:9px 12px; background:var(--accent-soft); border-radius:8px;
+         font-size:13px; color:#7a3c0c; }
+  .res::before { content:"Our reading — "; font-weight:600; }
+  .tag { display:inline-block; font:500 10.5px "JetBrains Mono",monospace; padding:2px 8px;
+         border-radius:99px; background:#f1ede3; color:var(--ink2); margin:0 4px 2px 0; white-space:nowrap; }
+  .stats { margin-top:14px; padding-top:12px; border-top:1px solid var(--line);
+           color:var(--faint); font-size:12.5px; display:flex; flex-wrap:wrap; gap:6px 18px; }
+  .stats b { color:var(--ink2); font-weight:600; }
+  footer { border-top:1px solid var(--line2); padding:14px 0 30px; color:var(--faint); font-size:12.5px;
+           display:flex; gap:10px; }
+  footer .r { margin-left:auto; }
 </style>
 </head>
 <body>
-<header><h1>citescout</h1><span>research agent for developers · every claim cited · powered by SerpApi</span></header>
-<form id="f">
-  <input id="q" placeholder="e.g. Is the Python requests library still maintained, or should I switch to httpx?" autocomplete="off">
-  <button id="go">Research</button>
-</form>
-<main>
-  <section class="panel"><h2>Agent trace</h2><div id="trace"><div class="muted">Waiting for a question.</div></div></section>
+<header><div class="wrap bar">
+  <svg class="mark" viewBox="0 0 34 34" aria-hidden="true">
+    <rect x="1" y="1" width="32" height="32" rx="9" fill="#1b1a17"/>
+    <circle cx="14.5" cy="14.5" r="6.2" fill="none" stroke="#fdfcf8" stroke-width="2.4"/>
+    <line x1="19.2" y1="19.2" x2="25" y2="25" stroke="#b3530f" stroke-width="2.8" stroke-linecap="round"/>
+    <path d="M11.6 16.9c0-2.6 1.8-4.4 4-4.7v1.5c-1.3.2-2.2 1.2-2.3 2.2h2.2v3.3h-3.9v-2.3z" fill="#fdfcf8" transform="scale(.62) translate(7.5 8.5)"/>
+  </svg>
+  <span class="brand">cite<em>scout</em></span>
+  <span class="byline"><b>research agent for developers</b><span class="dot"></span>every claim cited<span class="dot"></span>powered by SerpApi</span>
+</div></header>
+<div class="wrap hero">
+  <h1>Ask a question, get a brief you can verify.</h1>
+  <p>citescout plans searches across multiple engines, checks what it finds against live package registries and code hosts, flags where sources disagree, and cites every claim to the exact source.</p>
+  <form id="f">
+    <input id="q" placeholder="e.g. Is the Python requests library still maintained, or should I switch to httpx?" autocomplete="off">
+    <button id="go">Research</button>
+  </form>
+</div>
+<main class="wrap">
+  <section class="card"><p class="kicker">Agent trace</p><div id="trace"><div class="muted">Waiting for a question.</div></div></section>
   <section id="out"></section>
 </main>
+<footer><div class="wrap" style="display:flex;gap:10px;width:100%">
+  <span>citescout · built for the SerpApi India Hackathon 2026</span>
+  <span class="r">plan → search → verify → cite</span>
+</div></footer>
 <script>
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function line(html){ const d=document.createElement("div"); d.innerHTML=html; $("#trace").appendChild(d); }
+function line(html){ const d=document.createElement("div"); d.innerHTML=html; $("#trace").appendChild(d);
+  $("#trace").scrollTop = $("#trace").scrollHeight; return d; }
 function cites(text, urls){
   return esc(text).replace(/\[(E\d+(?:,\s*E\d+)*)\]/g, (_, ids) =>
-    ids.split(/,\s*/).map(i => urls[i] ? `<a class="cite" href="${esc(urls[i])}" target="_blank">${i}</a>` : "").join(""));
+    ids.split(/,\s*/).map(i => urls[i] ? `<a class="cite" href="${esc(urls[i])}" target="_blank" title="${esc(urls[i])}">${i}</a>` : "").join(""));
 }
 function render(b){
   const urls = Object.fromEntries(b.evidence.map(e => [e.id, e.url]));
-  let h = `<div class="panel"><h2>Verdict</h2><div id="verdict">${cites(b.verdict, urls)}</div></div>`;
-  h += `<div class="panel"><h2>Claims</h2><table><tr><th>Confidence</th><th>Claim</th><th>Sources</th></tr>`;
+  let h = `<div class="card"><p class="kicker">Verdict</p><div id="verdict">${cites(b.verdict, urls)}</div></div>`;
+  h += `<div class="card"><p class="kicker">Claims · checked</p><table><tr><th>Confidence</th><th>Claim</th><th>Sources</th></tr>`;
   for (const c of b.claims) h += `<tr><td><span class="conf ${c.confidence}" title="${esc(c.confidence_reason)}">${c.confidence}</span></td>
-     <td>${esc(c.text)}</td><td>${c.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank">${i}</a>`).join(" ")}</td></tr>`;
+     <td>${esc(c.text)}</td><td>${c.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank" title="${esc(urls[i])}">${i}</a>`).join(" ")}</td></tr>`;
   h += `</table></div>`;
   if (b.contradictions.length){
-    h += `<div class="panel disagree"><h2 style="color:var(--red)">Sources disagree</h2>`;
+    h += `<div class="card disagree"><p class="kicker" style="color:var(--weak)">Sources disagree</p>`;
     for (const c of b.contradictions) h += `<div><b>${esc(c.topic)}</b> <span class="tag">${c.detected_by}</span><ul>${
-      c.positions.map(p=>`<li>${cites(p, urls)}</li>`).join("")}</ul>${c.resolution?`<div class="res">→ ${esc(c.resolution)}</div>`:""}</div>`;
+      c.positions.map(p=>`<li>${cites(p, urls)}</li>`).join("")}</ul>${c.resolution?`<div class="res">${esc(c.resolution)}</div>`:""}</div>`;
     h += `</div>`;
   }
   const used = new Set([...b.claims.flatMap(c=>c.citations), ...b.contradictions.flatMap(c=>c.citations)]);
-  h += `<div class="panel"><h2>Evidence</h2><table><tr><th>ID</th><th>Type</th><th>Via</th><th>Date</th><th>Source</th></tr>`;
-  for (const e of b.evidence.filter(e=>used.has(e.id))) h += `<tr><td>${e.id}</td><td><span class="tag">${e.source_type}</span></td>
-     <td>${e.engine ?? "live API"}</td><td>${(e.published||"").slice(0,10)}</td><td><a href="${esc(e.url)}" target="_blank">${esc(e.title)}</a><br><span class="muted">${esc(e.domain)}</span></td></tr>`;
-  h += `</table><div class="stats">SerpApi: ${b.searches_used} live searches, ${b.cache_hits} cached · ${b.evidence.length} sources gathered · ${b.dropped_claims} uncited claims dropped · ${esc(b.model)}</div></div>`;
-  if (b.open_questions.length) h += `<div class="panel"><h2>Open questions</h2><ul>${b.open_questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;
+  h += `<div class="card"><p class="kicker">Evidence</p><table><tr><th>ID</th><th>Type</th><th>Via</th><th>Date</th><th>Source</th></tr>`;
+  for (const e of b.evidence.filter(e=>used.has(e.id))) h += `<tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">${e.id}</td><td><span class="tag">${e.source_type}</span></td>
+     <td style="font-size:12.5px;color:var(--faint)">${e.engine ?? "live API"}</td><td style="font-size:12.5px;color:var(--faint)">${(e.published||"").slice(0,10)}</td>
+     <td><a href="${esc(e.url)}" target="_blank">${esc(e.title)}</a><br><span class="muted" style="font-size:12px">${esc(e.domain)}</span></td></tr>`;
+  h += `</table><div class="stats"><span><b>${b.searches_used}</b> live SerpApi searches</span><span><b>${b.cache_hits}</b> served from cache</span>
+    <span><b>${b.evidence.length}</b> sources gathered</span><span><b>${b.dropped_claims}</b> uncited claims dropped</span><span>${esc(b.model)}</span></div></div>`;
+  if (b.open_questions.length) h += `<div class="card"><p class="kicker">Open questions</p><ul>${b.open_questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;
   $("#out").innerHTML = h;
 }
 $("#f").onsubmit = ev => {
@@ -81,7 +162,7 @@ $("#f").onsubmit = ev => {
   const q = $("#q").value.trim(); if (q.length < 5) return;
   $("#trace").innerHTML = ""; $("#out").innerHTML = ""; $("#go").disabled = true;
   const es = new EventSource(`/api/ask?q=${encodeURIComponent(q)}`);
-  es.addEventListener("plan.start", () => line(`<b>Planning</b> research...`));
+  es.addEventListener("plan.start", () => line(`<b class="busy">Planning research</b>`));
   es.addEventListener("plan.done", m => { const p = JSON.parse(m.data).plan;
     line(`intent <span class="ok">${esc(p.intent)}</span> · subjects ${esc(p.subjects.map(s=>s.name).join(", ")||"-")}`);
     for (const s of p.searches) line(`<span class="eng">${s.engine}</span> ${esc(s.query)}${s.recent_only?' <span class="muted">(past year)</span>':''}<br><span class="muted">${esc(s.purpose)}</span>`); });
@@ -90,7 +171,7 @@ $("#f").onsubmit = ev => {
   es.addEventListener("verify.done", m => { for (const f of JSON.parse(m.data).facts)
     line(`<span class="ok">✓</span> ${f.source} ${esc(f.subject)} · ${esc([f.latest_version && "latest "+f.latest_version, f.latest_release && "released "+f.latest_release.slice(0,10), f.archived && "ARCHIVED", f.last_push && "push "+f.last_push.slice(0,10)].filter(Boolean).join(", "))}`); });
   es.addEventListener("filter.done", m => line(`<span class="muted">dropped ${JSON.parse(m.data).dropped} off-topic results</span>`));
-  es.addEventListener("synthesize.start", m => line(`<b>Cross-checking</b> ${JSON.parse(m.data).evidence} sources...`));
+  es.addEventListener("synthesize.start", m => line(`<b class="busy">Cross-checking ${JSON.parse(m.data).evidence} sources</b>`));
   es.addEventListener("synthesize.retry", m => line(`<span class="muted">retry: ${esc(JSON.parse(m.data).reason)}</span>`));
   es.addEventListener("synthesize.done", m => { const d = JSON.parse(m.data);
     line(`${d.claims} claims · ${d.contradictions} disagreement(s) · ${d.dropped} uncited dropped`); });
