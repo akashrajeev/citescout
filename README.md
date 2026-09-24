@@ -1,5 +1,7 @@
 # citescout
 
+[![tests](https://github.com/akashrajeev/citescout/actions/workflows/tests.yml/badge.svg)](https://github.com/akashrajeev/citescout/actions/workflows/tests.yml)
+
 **A research agent for developers that answers with typed citations and tells you when sources disagree.**
 
 Ask it things like *"Is the Python requests library still maintained, or should I switch to httpx?"* or *"Should I upgrade Pydantic v1 to v2 in a FastAPI project, and what breaks?"*. citescout plans a set of searches across several SerpApi engines, checks what it finds against live package-registry data, and writes a short brief where **every claim links to the evidence behind it**, with a confidence level computed by code and a separate section for the places where sources contradict each other.
