@@ -21,6 +21,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install
-        run: pip install -e '.[web,dev]'
+        run: pip install -e '.[web,dev,mcp]'
       - name: Run tests (offline, SerpApi and registries are faked)
         run: pytest -q
