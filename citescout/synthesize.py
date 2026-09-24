@@ -109,7 +109,9 @@ def validate(raw: dict, evidence: list[Evidence]) -> tuple[str, list[Claim], lis
 
 
 def _normalize_markers(text: str) -> str:
-    """Models sometimes write (E3, E4) or 【E3】 instead of [E3, E4]; bring them to one form."""
+    """Models sometimes write (E3, E4), 【E3】 or ["E3","E4"] instead of [E3, E4]; bring them to one form."""
+    text = re.sub(r"\[\s*\"(E\d+)\"((?:\s*,\s*\"E\d+\")*)\s*\]",
+                  lambda m: "[" + ", ".join(re.findall(r"E\d+", m.group(0))) + "]", text)
     text = re.sub(r"[(【]\s*(E\d+(?:\s*[,;]\s*E\d+)*)\s*[)】]", lambda m: "[" + re.sub(r"\s*[,;]\s*", ", ", m.group(1)) + "]", text)
     return re.sub(r"\]\[", ", ", text)
 

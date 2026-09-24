@@ -93,3 +93,8 @@ def test_citation_markers_are_normalized():
     raw = {"verdict": "Upgrade now (E1,E2) and see 【E3】 [E1][E2].", "claims": [{"text": "x", "citations": ["E1"]}]}
     verdict, *_ = validate(raw, EVIDENCE)
     assert verdict == "Upgrade now [E1, E2] and see [E3] [E1, E2]."
+
+
+def test_json_style_citation_markers_are_normalized():
+    from citescout.synthesize import _strip_bad_ids
+    assert _strip_bad_ids('Active ["E1","E2"] and ["E99"].', {"E1", "E2"}) == "Active [E1, E2] and ."
