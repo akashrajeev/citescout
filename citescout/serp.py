@@ -120,8 +120,8 @@ class SerpSearcher:
         except Exception as exc:  # noqa: BLE001
             if "timed out" not in str(exc).lower():
                 raise
-            # SerpApi keeps finishing a search after a client timeout and serves identical
-            # requests from its 1h cache for free, so one retry does not cost a new credit.
+            # SerpApi serves identical searches from its 1h cache for free, so if the first
+            # request finished server-side, this retry is normally free.
             data = _scrub(self._search(params))
         if data.get("error"):
             raise RuntimeError(f"SerpApi error: {data['error']}")
