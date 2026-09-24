@@ -81,3 +81,11 @@ def test_separator_collapsing_does_not_hide_dates():
             "last push 2026-09-21; 355 open issues+PRs (live API)", engine=None, st=SourceType.REPOSITORY)
     c = Claim(text="The Requests repository was last pushed to on 2026\u201109\u201121.", citations=["E24"])
     assert check_claim(c, {"E24": gh}, {})[0] == "page"
+
+
+def test_comma_thousands_next_to_a_date():
+    r = ev(25, "https://pypi.org/project/httpx/", "PYPI record for httpx",
+           "released 2024-12-06; 143,868,864 downloads in the last week (live API)", engine=None,
+           st=SourceType.PACKAGE_REGISTRY)
+    c = Claim(text="httpx had 143,868,864 downloads in the last week", citations=["E25"])
+    assert check_claim(c, {"E25": r}, {})[0] == "page"

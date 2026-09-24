@@ -15,6 +15,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 from citescout.classify import SOURCE_WEIGHT
+from citescout.support import _repo_of
 from citescout.models import Claim, Confidence, Contradiction, Evidence, RegistryFact
 
 _VERSION_RE = re.compile(r"\b(?:v|version\s*)?(\d+\.\d+(?:\.\d+)?)\b", re.I)
@@ -28,6 +29,16 @@ _DEAD_RE = re.compile(r"\b((?:is|has been|was|now)\s+deprecated|abandoned|unmain
 
 _SAFE_RE = re.compile(r"\b(no known (?:security )?vulnerabilit(?:y|ies)|no (?:known )?CVEs?|"
                       r"zero (?:known )?vulnerabilit(?:y|ies)|no security (?:issues|advisories))\b", re.I)
+
+
+_IDIOMS = re.compile(r"\b(at|for|in|of) the moment\b|\bmoment of\b", re.I)
+
+
+def _names_subject(text: str, name: str) -> bool:
+    """Whole-word mention of the subject, ignoring idioms that reuse plain-word names
+    ("at the moment" is not about moment.js)."""
+    t = _IDIOMS.sub(" ", text).lower()
+    return re.search(rf"(?<![a-z0-9]){re.escape(name)}(?![a-z0-9])", t) is not None
 
 
 def _norm(v: str) -> tuple[int, ...]:
@@ -108,7 +119,11 @@ def rule_contradictions(evidence: list[Evidence], facts: list[RegistryFact]) -> 
         active = bool(recent) and max(recent) > now - timedelta(days=183)
         for e in web:
             text = f"{e.title} {e.snippet}"
-            if name in text.lower() and _DEAD_RE.search(text) and e.id not in flagged:
+            repo = _repo_of(e.url)
+            if repo is not None and name not in repo:
+                continue  # "no longer maintained" on another project's repo is about that project
+            if (_names_subject(text, name) and (m := _DEAD_RE.search(text)) and e.id not in flagged
+                    and name in text[max(0, m.start() - 200):m.end() + 200].lower()):
                 if active and not f.archived:
                     flagged.add(e.id)
                     out.append(Contradiction(

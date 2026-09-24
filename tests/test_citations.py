@@ -98,3 +98,20 @@ def test_citation_markers_are_normalized():
 def test_json_style_citation_markers_are_normalized():
     from citescout.synthesize import _strip_bad_ids
     assert _strip_bad_ids('Active ["E1","E2"] and ["E99"].', {"E1", "E2"}) == "Active [E1, E2] and ."
+
+
+def test_idiom_and_other_repo_do_not_count_as_dead_project_claims():
+    now = datetime.now(timezone.utc)
+    supabase = ev(1, "https://github.com/supabase-community/auth-ui",
+                  snippet="As of 7th Feb 2024, this repository is no longer maintained. At the moment, the team does not have capacity")
+    reg = ev(2, "https://www.npmjs.com/package/moment", engine=None, st=SourceType.PACKAGE_REGISTRY)
+    fact = RegistryFact(subject="moment", source="npm", url=reg.url, latest_version="2.31.0",
+                        latest_release=now, evidence_id="E2")
+    assert not rule_contradictions([supabase, reg], [fact])
+
+
+def test_relevance_filter_ignores_at_the_moment():
+    from citescout.agent import _relevant
+    from citescout.models import Subject
+    e = ev(1, "https://github.com/supabase-community/auth-ui", snippet="At the moment, the team does not have capacity")
+    assert _relevant([e], [Subject(name="moment", ecosystem="npm")]) == []

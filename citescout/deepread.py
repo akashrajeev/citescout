@@ -71,6 +71,7 @@ def html_to_text(html: str) -> str:
 
 
 def _norm(text: str) -> str:
+    text = re.sub(r"(?<=\d),(?=\d{3}(?!\d))", "", text)  # 143,868,864 -> 143868864 before punctuation goes
     return " " + re.sub(r"[^a-z0-9.]+", " ", text.lower()).replace(". ", " ") + " "
 
 

@@ -30,6 +30,12 @@ _READ_MARK = {"page": "✓ page", "snippet": "~ snip", "unconfirmed": "✗ none"
 _READ_STYLE = {"page": "green", "snippet": "yellow", "unconfirmed": "red"}
 
 
+def _read_label(c) -> str:  # noqa: ANN001
+    if c.verification == "page" and "live API" in c.verification_detail:
+        return "✓ API"
+    return {"page": "✓ page", "snippet": "~ snippet", "unconfirmed": "✗ not found"}.get(c.verification or "", "-")
+
+
 def to_console(brief: Brief, console: Console) -> None:
     console.print(Panel(_cite_text(brief.verdict), title=f"[b]Verdict[/b]  {brief.question}", border_style="cyan"))
 
@@ -40,8 +46,7 @@ def to_console(brief: Brief, console: Console) -> None:
     t.add_column("Read", width=6)
     for c in brief.claims:
         t.add_row(Text(c.confidence.value, style=_CONF_STYLE[c.confidence]), _cite_text(c.text),
-                  ", ".join(c.citations), Text("✓ API" if c.verification == "page" and "live API" in c.verification_detail
-                                               else _READ_MARK.get(c.verification or "", "-"),
+                  ", ".join(c.citations), Text(_read_label(c).replace("~ snippet", "~ snip").replace("✗ not found", "✗ none"),
                                                style=_READ_STYLE.get(c.verification or "", "dim")))
     console.print(t)
 
@@ -108,7 +113,7 @@ def to_markdown(brief: Brief) -> str:
     lines = [f"# {brief.question}", "", f"**Verdict:** {md(brief.verdict)}", "", "## Claims", ""]
     for c in brief.claims:
         cites = ", ".join(f"[{i}]({link[i]})" for i in c.citations)
-        read = f" · {_READ_MARK[c.verification]} {c.verification_detail}" if c.verification in _READ_MARK else ""
+        read = f" · {_read_label(c)}: {c.verification_detail}" if c.verification in _READ_MARK else ""
         lines.append(f"- **{c.confidence.value}** - {md(c.text)} ({cites}) _{c.confidence_reason}{read}_")
     if brief.comparison:
         cmp_ = brief.comparison

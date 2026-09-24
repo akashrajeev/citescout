@@ -36,6 +36,9 @@ _TECH_CONTEXT = re.compile(
     r"vector|dataset|model|paper)\b", re.I)
 
 
+_IDIOMS = re.compile(r"\b(at|for|in|of) the moment\b|\bmoment of\b", re.I)
+
+
 def _relevant(evidence: list[Evidence], plan_subjects: list) -> list[Evidence]:
     """Drop results that never mention any subject.
 
@@ -58,7 +61,7 @@ def _relevant(evidence: list[Evidence], plan_subjects: list) -> list[Evidence]:
                   SourceType.OFFICIAL_DOCS, SourceType.ACADEMIC, SourceType.ADVISORY}
     kept = []
     for e in evidence:
-        text = f"{e.title} {e.snippet} {e.url}".lower()
+        text = _IDIOMS.sub(" ", f"{e.title} {e.snippet} {e.url}").lower()
         hits = [n for n in names if re.search(rf"(?<![a-z0-9]){re.escape(n)}(?![a-z0-9])", text)]
         if not hits:
             continue
