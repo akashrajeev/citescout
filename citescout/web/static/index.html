@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>citescout - cited answers for developers</title>
+<style>
+  :root { --bg:#0f1117; --panel:#171a23; --line:#262b38; --text:#e6e8ee; --dim:#8a90a2; --cyan:#5ad1e8;
+          --green:#4ade80; --yellow:#facc15; --red:#f87171; --mag:#c084fc; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { padding:22px 32px 8px; display:flex; align-items:baseline; gap:14px; }
+  header h1 { margin:0; font-size:22px; letter-spacing:.3px; }
+  header span { color:var(--dim); }
+  form { display:flex; gap:10px; padding:10px 32px 18px; }
+  input { flex:1; background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 14px; font-size:15px; }
+  button { background:var(--cyan); color:#05232a; border:0; border-radius:10px; padding:0 20px; font-weight:600; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:default; }
+  main { display:grid; grid-template-columns: 380px 1fr; gap:18px; padding:0 32px 40px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+  .panel h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--dim); }
+  #trace div { font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; padding:3px 0; border-bottom:1px dashed #20242f; }
+  .eng { color:var(--mag); } .ok { color:var(--green); } .err { color:var(--red); } .muted { color:var(--dim); }
+  #verdict { font-size:16px; }
+  .cite { color:var(--cyan); text-decoration:none; font-weight:600; font-size:12px; vertical-align:super; margin-left:1px; }
+  table { width:100%; border-collapse:collapse; margin-top:6px; }
+  td, th { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top; font-size:14px; }
+  th { color:var(--dim); font-weight:500; font-size:12px; text-transform:uppercase; }
+  .conf { font-size:12px; font-weight:700; text-transform:uppercase; }
+  .high { color:var(--green); } .medium { color:var(--yellow); } .low { color:var(--red); }
+  .disagree { border-color:#5b2b2b; }
+  .disagree li { margin:4px 0; }
+  .res { color:var(--dim); font-style:italic; }
+  .tag { display:inline-block; font-size:11px; padding:1px 7px; border-radius:99px; background:#222838; color:var(--dim); margin-right:4px; }
+  .stats { color:var(--dim); font-size:13px; margin-top:10px; }
+  #out > .panel { margin-bottom:16px; }
+  a { color:var(--cyan); }
+</style>
+</head>
+<body>
+<header><h1>citescout</h1><span>research agent for developers · every claim cited · powered by SerpApi</span></header>
+<form id="f">
+  <input id="q" placeholder="e.g. Is the Python requests library still maintained, or should I switch to httpx?" autocomplete="off">
+  <button id="go">Research</button>
+</form>
+<main>
+  <section class="panel"><h2>Agent trace</h2><div id="trace"><div class="muted">Waiting for a question.</div></div></section>
+  <section id="out"></section>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function line(html){ const d=document.createElement("div"); d.innerHTML=html; $("#trace").appendChild(d); }
+function cites(text, urls){
+  return esc(text).replace(/\[(E\d+(?:,\s*E\d+)*)\]/g, (_, ids) =>
+    ids.split(/,\s*/).map(i => urls[i] ? `<a class="cite" href="${esc(urls[i])}" target="_blank">${i}</a>` : "").join(""));
+}
+function render(b){
+  const urls = Object.fromEntries(b.evidence.map(e => [e.id, e.url]));
+  let h = `<div class="panel"><h2>Verdict</h2><div id="verdict">${cites(b.verdict, urls)}</div></div>`;
+  h += `<div class="panel"><h2>Claims</h2><table><tr><th>Confidence</th><th>Claim</th><th>Sources</th></tr>`;
+  for (const c of b.claims) h += `<tr><td><span class="conf ${c.confidence}" title="${esc(c.confidence_reason)}">${c.confidence}</span></td>
+     <td>${esc(c.text)}</td><td>${c.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank">${i}</a>`).join(" ")}</td></tr>`;
+  h += `</table></div>`;
+  if (b.contradictions.length){
+    h += `<div class="panel disagree"><h2 style="color:var(--red)">Sources disagree</h2>`;
+    for (const c of b.contradictions) h += `<div><b>${esc(c.topic)}</b> <span class="tag">${c.detected_by}</span><ul>${
+      c.positions.map(p=>`<li>${cites(p, urls)}</li>`).join("")}</ul>${c.resolution?`<div class="res">→ ${esc(c.resolution)}</div>`:""}</div>`;
+    h += `</div>`;
+  }
+  const used = new Set([...b.claims.flatMap(c=>c.citations), ...b.contradictions.flatMap(c=>c.citations)]);
+  h += `<div class="panel"><h2>Evidence</h2><table><tr><th>ID</th><th>Type</th><th>Via</th><th>Date</th><th>Source</th></tr>`;
+  for (const e of b.evidence.filter(e=>used.has(e.id))) h += `<tr><td>${e.id}</td><td><span class="tag">${e.source_type}</span></td>
+     <td>${e.engine ?? "live API"}</td><td>${(e.published||"").slice(0,10)}</td><td><a href="${esc(e.url)}" target="_blank">${esc(e.title)}</a><br><span class="muted">${esc(e.domain)}</span></td></tr>`;
+  h += `</table><div class="stats">SerpApi: ${b.searches_used} live searches, ${b.cache_hits} cached · ${b.evidence.length} sources gathered · ${b.dropped_claims} uncited claims dropped · ${esc(b.model)}</div></div>`;
+  if (b.open_questions.length) h += `<div class="panel"><h2>Open questions</h2><ul>${b.open_questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;
+  $("#out").innerHTML = h;
+}
+$("#f").onsubmit = ev => {
+  ev.preventDefault();
+  const q = $("#q").value.trim(); if (q.length < 5) return;
+  $("#trace").innerHTML = ""; $("#out").innerHTML = ""; $("#go").disabled = true;
+  const es = new EventSource(`/api/ask?q=${encodeURIComponent(q)}`);
+  es.addEventListener("plan.start", () => line(`<b>Planning</b> research...`));
+  es.addEventListener("plan.done", m => { const p = JSON.parse(m.data).plan;
+    line(`intent <span class="ok">${esc(p.intent)}</span> · subjects ${esc(p.subjects.map(s=>s.name).join(", ")||"-")}`);
+    for (const s of p.searches) line(`<span class="eng">${s.engine}</span> ${esc(s.query)}${s.recent_only?' <span class="muted">(past year)</span>':''}<br><span class="muted">${esc(s.purpose)}</span>`); });
+  es.addEventListener("search.done", m => { const d = JSON.parse(m.data);
+    line(d.error ? `<span class="err">✗</span> ${d.engine} ${esc(d.error)}` : `<span class="ok">✓</span> ${d.engine} · ${d.results} results`); });
+  es.addEventListener("verify.done", m => { for (const f of JSON.parse(m.data).facts)
+    line(`<span class="ok">✓</span> ${f.source} ${esc(f.subject)} · ${esc([f.latest_version && "latest "+f.latest_version, f.latest_release && "released "+f.latest_release.slice(0,10), f.archived && "ARCHIVED", f.last_push && "push "+f.last_push.slice(0,10)].filter(Boolean).join(", "))}`); });
+  es.addEventListener("filter.done", m => line(`<span class="muted">dropped ${JSON.parse(m.data).dropped} off-topic results</span>`));
+  es.addEventListener("synthesize.start", m => line(`<b>Cross-checking</b> ${JSON.parse(m.data).evidence} sources...`));
+  es.addEventListener("synthesize.retry", m => line(`<span class="muted">retry: ${esc(JSON.parse(m.data).reason)}</span>`));
+  es.addEventListener("synthesize.done", m => { const d = JSON.parse(m.data);
+    line(`${d.claims} claims · ${d.contradictions} disagreement(s) · ${d.dropped} uncited dropped`); });
+  es.addEventListener("brief", m => { render(JSON.parse(m.data)); es.close(); $("#go").disabled = false; });
+  es.addEventListener("error", m => { if (m.data) line(`<span class="err">${esc(JSON.parse(m.data).message)}</span>`); es.close(); $("#go").disabled = false; });
+};
+</script>
+</body>
+</html>
