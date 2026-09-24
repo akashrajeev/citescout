@@ -2,9 +2,13 @@
 
 | Brief | Question type | SerpApi engines exercised |
 |---|---|---|
-| [requests-vs-httpx.md](requests-vs-httpx.md) | library maintenance / switch decision | google, google_news |
-| [momentjs-alternatives.md](momentjs-alternatives.md) | library maintenance / alternatives | google, google_news |
-| [hnsw-ann-index.md](hnsw-ann-index.md) | research / algorithm comparison | google, google_news, **google_scholar** (with citation counts) |
+| [requests-vs-httpx.md](requests-vs-httpx.md) | library maintenance / switch decision | google, google_news, google_trends |
+| [momentjs-alternatives.md](momentjs-alternatives.md) | library maintenance / alternatives | google, google_news, google_trends |
+| [hnsw-ann-index.md](hnsw-ann-index.md) | research / algorithm comparison | google, google_news, **google_scholar** (with citation counts), google_trends |
+
+All three were regenerated with the v2 pipeline, so each one shows the deep-read column (`✓ page`,
+`✓ API`, `~ snippet`, `✗ not found`), the second research round (the gaps and follow-up searches),
+and the side-by-side table built from registry, OSV.dev and Google Trends data.
 
 Each brief is the Markdown export of a real run (`citescout ask "..." --markdown ...`) with a
 **Review** section at the end. Every claim-to-citation pair was checked one by one against the

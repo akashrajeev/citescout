@@ -1,30 +1,50 @@
 # Is moment.js still maintained, or should I move to date-fns or Day.js?
 
-**Verdict:** Moment.js is still receiving releases (latest 2.31.0 on 2026-09-15) but is in maintenance mode as a legacy project [E7](https://generalistprogrammer.com/comparisons/moment-vs-dayjs) [E10](https://www.npmjs.com/package/moment) [E11](https://github.com/moment/moment). For most new projects, date-fns or Day.js provide smaller bundles and more modern APIs, so migrating is advisable.
+**Verdict:** Moment.js is in maintenance mode [E7](https://generalistprogrammer.com/comparisons/moment-vs-dayjs) [E10](https://github.com/moment/moment/blob/develop/CHANGELOG.md), though npm shows a new release, 2.31.0, on 2026‑09‑15 [E13](https://www.npmjs.com/package/moment). date‑fns and Day.js both have 2026 releases and more weekly downloads than Moment.js, so one of them is the better choice for new work [E13](https://www.npmjs.com/package/moment) [E14](https://www.npmjs.com/package/date-fns) [E15](https://www.npmjs.com/package/dayjs).
 
 ## Claims
 
-- **high** - Moment.js latest version is 2.31.0, released 2026-09-15, and its GitHub repo is still active ([E10](https://www.npmjs.com/package/moment), [E11](https://github.com/moment/moment)) _2 independent domain(s), includes live registry data_
-- **low** - Moment.js is in maintenance mode and considered a legacy project ([E7](https://generalistprogrammer.com/comparisons/moment-vs-dayjs)) _1 independent domain(s)_
-- **high** - Day.js latest version is 1.11.23, released 2026-08-17 ([E14](https://www.npmjs.com/package/dayjs)) _1 independent domain(s), includes live registry data_
-- **high** - date-fns latest version is 4.4.0, released 2026-05-29 ([E12](https://www.npmjs.com/package/date-fns), [E13](https://github.com/date-fns/date-fns)) _2 independent domain(s), includes live registry data_
-- **low** - Day.js bundle size (~7 KB) is about 98 % smaller than Moment.js (~289 KB) ([E7](https://generalistprogrammer.com/comparisons/moment-vs-dayjs)) _1 independent domain(s)_
-- **low** - date-fns provides a functional, tree‑shakeable API that is ideal for minimizing bundle size ([E4](https://reintech.io/blog/date-fns-vs-dayjs-vs-luxon-comparison-2026), [E5](https://www.pkgpulse.com/guides/best-javascript-date-libraries-2026)) _2 independent domain(s)_
-- **low** - A step-by-step guide exists for migrating from Moment.js to date-fns ([E6](https://www.pkgpulse.com/guides/how-to-migrate-momentjs-to-date-fns)) _1 independent domain(s)_
-- **low** - The emerging JavaScript Temporal API is promoted as a native alternative to Moment.js and other libraries ([E9](https://www.smashingmagazine.com/2026/03/moving-from-moment-to-temporal-api/)) _1 independent domain(s)_
+- **medium** - Moment.js is in maintenance mode, according to its own changelog and an independent 2025 comparison ([E7](https://generalistprogrammer.com/comparisons/moment-vs-dayjs), [E10](https://github.com/moment/moment/blob/develop/CHANGELOG.md)) _2 independent domain(s) · ✓ page: verified against full page E7, E10_
+- **high** - The latest published version of Moment.js on npm is 2.31.0 released 2026‑09‑15 ([E13](https://www.npmjs.com/package/moment)) _1 independent domain(s), includes live registry data · ✓ API: verified against live API record E13_
+- **high** - date‑fns released version 4.4.0 on 2026‑05‑29 ([E14](https://www.npmjs.com/package/date-fns)) _1 independent domain(s), includes live registry data · ✓ API: verified against live API record E14_
+- **high** - Day.js released version 1.11.23 on 2026‑08‑17 ([E15](https://www.npmjs.com/package/dayjs)) _1 independent domain(s), includes live registry data · ✓ API: verified against live API record E15_
+- **high** - Weekly npm downloads: date‑fns 72,360,904, Day.js 50,946,083, Moment.js 26,501,970 ([E14](https://www.npmjs.com/package/date-fns), [E15](https://www.npmjs.com/package/dayjs), [E13](https://www.npmjs.com/package/moment)) _1 independent domain(s), includes live registry data · ✓ API: verified against live API record E14, E15, E13_
+- **low** - date‑fns and Day.js are recommended as modern alternatives due to smaller bundle sizes and functional or plugin‑oriented APIs ([E4](https://reintech.io/blog/date-fns-vs-dayjs-vs-luxon-comparison-2026), [E5](https://www.pkgpulse.com/guides/best-javascript-date-libraries-2026), [E7](https://generalistprogrammer.com/comparisons/moment-vs-dayjs)) _3 independent domain(s) · ✓ page: verified against full page E4, E5, E7_
+- **low** - Step‑by‑step migration guides from Moment.js to date‑fns exist, covering API mapping and the shift from chained methods to pure functions ([E6](https://www.pkgpulse.com/guides/how-to-migrate-momentjs-to-date-fns), [E12](https://www.linkedin.com/pulse/migration-guide-removing-momentjs-nishant-gupta-hlslc)) _2 independent domain(s) · ✓ page: verified against full page E6, E12_
+- **low** - Google Trends shows declining search interest for Moment.js while interest in date‑fns and Day.js remains higher ([E16](https://trends.google.com/trends/explore?date=today%2012-m&q=moment%20js%2Cdate-fns%2Cdayjs)) _1 independent domain(s) · ✓ API: verified against live API record E16_
 
-## Sources disagree
+## Side by side
 
-- **Moment.js maintenance status vs activity** (model)
-  - Moment.js is only in maintenance mode, no new features (legacy) [E7](https://generalistprogrammer.com/comparisons/moment-vs-dayjs)
-  - Moment.js received a new release on 2026-09-15, repository active with recent pushes [E10](https://www.npmjs.com/package/moment) [E11](https://github.com/moment/moment)
-  - Resolution: Both are compatible: the library is still maintained for critical fixes, but the project has declared a maintenance‑only policy, so no new features are expected.
+_Primary data (PyPI / npm / GitHub / OSV.dev / Google Trends), computed in code._
+
+| Metric | moment | date-fns | dayjs | Source |
+|---|---|---|---|---|
+| Latest version | 2.31.0 | 4.4.0 | 1.11.23 | [E13](https://www.npmjs.com/package/moment), [E14](https://www.npmjs.com/package/date-fns), [E15](https://www.npmjs.com/package/dayjs) |
+| Latest release | 2026-09-15 | 2026-05-29 | 2026-08-17 | [E13](https://www.npmjs.com/package/moment), [E14](https://www.npmjs.com/package/date-fns), [E15](https://www.npmjs.com/package/dayjs) |
+| Downloads, last week | 26,501,970 | 72,360,904 | 50,946,083 | [E13](https://www.npmjs.com/package/moment), [E14](https://www.npmjs.com/package/date-fns), [E15](https://www.npmjs.com/package/dayjs) |
+| OSV advisories on latest | 0 | 0 | 0 | [E13](https://www.npmjs.com/package/moment), [E14](https://www.npmjs.com/package/date-fns), [E15](https://www.npmjs.com/package/dayjs) |
+| Search interest, last 3 months (Trends) | 11 (down 44%) | 38 (up 21%) | 34 (down 33%) | [E16](https://trends.google.com/trends/explore?date=today%2012-m&q=moment%20js%2Cdate-fns%2Cdayjs) |
 
 ## Open questions
 
-- Will Moment.js continue to receive security patches beyond the current maintenance mode?
-- What are the adoption trends of date-fns and Day.js compared to Moment.js in 2026‑2027?
-- How do performance and memory usage of Moment.js, date-fns, Day.js, and the native Temporal API compare in real‑world workloads?
+- What, if any, future roadmap or deprecation timeline does the Moment.js maintainers have beyond maintenance mode?
+- Are there performance or feature gaps between Moment.js and the newer libraries that could affect specific legacy codebases?
+
+## Round 2
+
+Gaps the first draft left open:
+
+- Unconfirmed claim (cited sources share too few of the claim's terms): Both date‑fns and Day.js have significantly smaller bundle sizes than Moment.js, making them attractive for performance‑sensitive apps
+- Only weak support (1 independent domain(s)): Moment.js is in maintenance mode, meaning only critical bug fixes are applied and no new features are planned
+- Only weak support (2 independent domain(s)): Comprehensive migration guides from Moment.js to date‑fns and Day.js were published in 2026, indicating strong community support for transition
+- Only weak support (1 independent domain(s)): Google Trends shows a 44% drop in Moment.js interest over the last three months, while date‑fns and Day.js maintain higher relative interest
+- Only weak support (2 independent domain(s)): Recent articles recommend using Day.js or the native Temporal API instead of Moment.js for modern JavaScript projects
+- Open question: Will Moment.js receive any feature updates beyond critical fixes?
+
+Follow-up searches:
+
+- `google` site:github.com moment moment "maintenance mode"
+- `google` date-fns vs moment.js vs dayjs performance benchmark
 
 ## Evidence
 
@@ -39,21 +59,26 @@
 | E7 | other | google | 2026-01-03 | [Moment vs Dayjs: Complete Comparison 2025](https://generalistprogrammer.com/comparisons/moment-vs-dayjs) |
 | E8 | other | google |  | [Why We Should Remove Moment.js in 2025](https://www.linkedin.com/pulse/why-we-should-remove-momentjs-2025-nishant-gupta-cfukc) |
 | E9 | other | google | 2026-03-13 | [Moving From Moment.js To The JS Temporal API](https://www.smashingmagazine.com/2026/03/moving-from-moment-to-temporal-api/) |
-| E10 | package_registry | live API | 2026-09-15 | [NPM record for moment](https://www.npmjs.com/package/moment) |
-| E11 | repository | live API | 2026-09-15 | [GITHUB record for moment/moment](https://github.com/moment/moment) |
-| E12 | package_registry | live API | 2026-05-29 | [NPM record for date-fns](https://www.npmjs.com/package/date-fns) |
-| E13 | repository | live API | 2026-05-29 | [GITHUB record for date-fns/date-fns](https://github.com/date-fns/date-fns) |
-| E14 | package_registry | live API | 2026-08-17 | [NPM record for dayjs](https://www.npmjs.com/package/dayjs) |
+| E10 | repository | google | 2026-09-14 | [moment/CHANGELOG.md at develop](https://github.com/moment/moment/blob/develop/CHANGELOG.md) |
+| E11 | other | google | 2026-03-09 | [date-fns v4 vs Temporal API vs Day.js for JavaScript ...](https://www.pkgpulse.com/guides/date-fns-v4-vs-temporal-api-vs-dayjs-date-handling-2026) |
+| E12 | other | google |  | [Migration guide for removing Moment.js - Nishant Gupta](https://www.linkedin.com/pulse/migration-guide-removing-momentjs-nishant-gupta-hlslc) |
+| E13 | package_registry | live API | 2026-09-15 | [NPM record for moment](https://www.npmjs.com/package/moment) |
+| E14 | package_registry | live API | 2026-05-29 | [NPM record for date-fns](https://www.npmjs.com/package/date-fns) |
+| E15 | package_registry | live API | 2026-08-17 | [NPM record for dayjs](https://www.npmjs.com/package/dayjs) |
+| E16 | other | google_trends |  | [Google Trends: moment js vs date-fns vs dayjs (past 12 months)](https://trends.google.com/trends/explore?date=today%2012-m&q=moment%20js%2Cdate-fns%2Cdayjs) |
 
-_SerpApi searches: 6 live, 0 cached. Unsupported claims dropped: 0. Off-subject citations unlinked: 0. Model: openai/gpt-oss-120b. Generated 2026-09-24 13:23 UTC by citescout._
+_SerpApi searches: 0 live, 9 cached. Pages read in full: 5; claims verified against a full page or live API record: 8/8. Unsupported claims dropped: 0. Off-subject citations unlinked: 1. Model: openai/gpt-oss-120b. Generated 2026-09-24 14:50 UTC by citescout._
 
 ## Review
 
-This brief is a real citescout run (live SerpApi searches, output unchanged except as listed). Every claim-to-citation pair was then checked one by one (by the AI coding agent that built this project, see the AI disclosure in the README) against the cited snippet, and against the page itself where the snippet was thin. Changes made in review:
+This brief is a real citescout run (SerpApi results replayed from the cache of the live runs, output unchanged except as listed). Every claim-to-citation pair, the side-by-side table and the disagreements were then checked one by one (by the AI coding agent that built this project, see the AI disclosure in the README) against the cited snippet, and against the page itself where the snippet was thin. Changes made in review:
 
-- Maintenance-mode claim: dropped the words "officially" and "no new feature development", which the cited snippet (E7) does not say. The claim itself checks out against the project's own docs (https://momentjs.com/docs/: "Moment is a legacy project in maintenance mode"), but that page was not in this run's evidence, so it stays at low confidence.
-- Day.js bundle-size claim: removed E5 (pkgpulse). Its snippet recommends Day.js for a small Moment-like API but gives no size figures; E7 carries the 7 KB vs 289 KB numbers.
-- Migration-guide claim: removed E3 (makeuseof, 2023). It is a Day.js-in-React tutorial, not a Moment.js migration guide, so the claim now covers date-fns only.
-- Verdict: replaced "officially in maintenance mode, meaning only critical fixes are added and no new features are planned" with "in maintenance mode as a legacy project", the wording E7 supports.
+- Verdict: the model said Moment.js "still receives bug fixes ... but no new features". None of the cited sources describes what 2.31.0 contains or says there will be no new features. Rewritten to what the sources say: maintenance mode (E7, E10) plus the npm release (E13). "Actively maintained" for date-fns and Day.js became "have 2026 releases", which is what the registry rows show.
+- Maintenance-mode claim: "no longer receives new features" removed for the same reason.
+- date-fns and Day.js release claims: "and is actively maintained" removed. One release date is not evidence of ongoing maintenance.
+- Downloads claim: rewritten to the exact npm figures. It had not cited the date-fns record (E14), and deep-read flagged it.
+- Migration-guide claim: "showing community support for moving away" removed (editorial, not in the sources).
+- "Latest Moment.js version" disagreement removed. The model read the changelog snippet's 2.28.0 entry (E10) as a claim that 2.28.0 is the latest version. The snippet is just an excerpt from an old section of the changelog.
+- Code fix found in this review: before it, an unrelated Supabase repository ("At the moment, the team...") was kept as Moment.js evidence, and a rule flagged it as "moment is no longer maintained". Plain-word names now ignore idioms, and the rule skips other projects' GitHub repositories. This brief was regenerated after the fix.
 
-Everything not listed was checked and left as generated.
+Everything not listed was checked and left as generated. Confidence and the deep-read column were recomputed by code after the edits.

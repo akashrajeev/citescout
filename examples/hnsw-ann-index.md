@@ -1,22 +1,49 @@
 # Is HNSW still the best approximate nearest neighbor index for vector search, or have newer indexes like DiskANN or ScaNN overtaken it?
 
-**Verdict:** The evidence is mixed and mostly single-source. Blog and benchmark reports favour DiskANN for memory and scale (SSD-resident, billion-vector datasets, higher dimension limits in pgvector) and ScaNN for throughput [E1](https://medium.com/@adnanmasood/the-shortcut-through-space-hierarchical-navigable-small-worlds-hnsw-in-vector-search-part-2-ba2e8a64134e) [E4](https://ranjankumar.in/hnsw-vector-search-recall-production) [E5](https://www.dbi-services.com/blog/pgvector-a-guide-for-dba-part-2-indexes-update-march-2026/), and one 2025 entity-resolution study finds partition-based ScaNN ahead of HNSW and DiskANN [E14](https://journals.sagepub.com/doi/abs/10.1177/18724981251388888). HNSW is no longer the automatic default, but nothing here shows one index winning across the board.
+**Verdict:** The evidence does not name a single winner. DiskANN is built for SSD-resident, billion-scale indexes [E2](https://bigdataboutique.com/blog/hnsw-vs-ivfflat-how-to-choose-the-right-vector-index) and supports far higher dimensions than HNSW in pgvector setups [E5](https://www.dbi-services.com/blog/pgvector-a-guide-for-dba-part-2-indexes-update-march-2026/). ScaNN is reported to handle about twice the queries per second, while HNSW recall degrades faster as the corpus grows [E4](https://ranjankumar.in/hnsw-vector-search-recall-production), and one 2025 study found ScaNN ahead of both HNSW and DiskANN for entity resolution [E14](https://journals.sagepub.com/doi/abs/10.1177/18724981251388888). HNSW is still widely used, but at very large scale the alternatives now have the stronger evidence.
 
 ## Claims
 
-- **low** - A blog summary of Microsoft's benchmarks reports DiskANN reaching 95% recall at ~3 ms latency on a 1-billion-vector dataset with only 64 GB RAM plus SSD, in a comparison with HNSW ([E1](https://medium.com/@adnanmasood/the-shortcut-through-space-hierarchical-navigable-small-worlds-hnsw-in-vector-search-part-2-ba2e8a64134e)) _1 independent domain(s)_
-- **low** - Production reports indicate HNSW recall degrades faster as corpus size grows, while ScaNN handles roughly twice the query throughput under similar conditions ([E4](https://ranjankumar.in/hnsw-vector-search-recall-production)) _1 independent domain(s)_
-- **low** - DiskANN supports up to 16,000 dimensions, whereas HNSW practical limits are around 2,000 dimensions in pgvector implementations ([E5](https://www.dbi-services.com/blog/pgvector-a-guide-for-dba-part-2-indexes-update-march-2026/)) _1 independent domain(s)_
-- **low** - A 2025 study of one-million-vector entity-resolution benchmarks reports that partition-based methods, particularly ScaNN, outperform the graph-based HNSW and DiskANN ([E14](https://journals.sagepub.com/doi/abs/10.1177/18724981251388888)) _1 independent domain(s)_
-- **high** - DiskANN (v0.59.0, Sep 2026) and ScaNN (v1.4.2, Aug 2025) have recent releases, while HNSW's latest PyPI release was Dec 2023 (0.8.0) though a GitHub release v0.9.0 appeared Mar 2026, indicating slower update cadence ([E20](https://pypi.org/project/hnswlib/), [E21](https://github.com/nmslib/hnswlib), [E22](https://github.com/microsoft/DiskANN), [E23](https://pypi.org/project/scann/)) _2 independent domain(s), includes live registry data_
-- **low** - DiskANN is a graph index designed for SSD‑resident operation ([E2](https://bigdataboutique.com/blog/hnsw-vs-ivfflat-how-to-choose-the-right-vector-index)) _1 independent domain(s)_
-- **low** - Community discussions highlight newer alternatives like jVector that claim faster and more memory‑efficient search than HNSW ([E3](https://dev.to/aairom/jvector-vs-hsnw-part-3-2n3g)) _1 independent domain(s)_
+- **low** - A Medium article reports that Microsoft's benchmark of DiskANN on a 1B-vector dataset reached 95% recall with ~3 ms latency using only 64 GB RAM + SSD ([E1](https://medium.com/@adnanmasood/the-shortcut-through-space-hierarchical-navigable-small-worlds-hnsw-in-vector-search-part-2-ba2e8a64134e)) _1 independent domain(s) · ~ snippet: matches the search snippet; the full page did not confirm it or was not readable_
+- **low** - HNSW recall degrades faster than flat search as corpus size grows, while ScaNN sustains higher query throughput ([E4](https://ranjankumar.in/hnsw-vector-search-recall-production)) _1 independent domain(s) · ✓ page: verified against full page E4_
+- **low** - DiskANN supports up to 16,000 dimensions, whereas HNSW tops out at 2,000 dimensions ([E5](https://www.dbi-services.com/blog/pgvector-a-guide-for-dba-part-2-indexes-update-march-2026/)) _1 independent domain(s) · ✓ page: verified against full page E5_
+- **low** - ScaNN focuses on high‑recall, high‑throughput inner‑product search, making it suitable for large‑scale workloads ([E2](https://bigdataboutique.com/blog/hnsw-vs-ivfflat-how-to-choose-the-right-vector-index)) _1 independent domain(s) · ✓ page: verified against full page E2_
+- **high** - hnswlib's latest PyPI release is 0.8.0 (2023‑12‑03); scann's is 1.4.2 (2025‑08‑29) ([E20](https://pypi.org/project/hnswlib/), [E21](https://pypi.org/project/scann/)) _1 independent domain(s), includes live registry data · ✓ API: verified against live API record E20, E21_
+- **low** - A 2025 comparative study found partition-based ScaNN superior to graph-based HNSW and DiskANN for entity resolution ([E14](https://journals.sagepub.com/doi/abs/10.1177/18724981251388888)) _1 independent domain(s) · ~ snippet: matches the search snippet; the full page did not confirm it or was not readable_
+- **medium** - DiskANN3 is a composable library for scalable, accurate vector indexing, showing ongoing development ([E8](https://github.com/Microsoft/DiskANN?lang=fr-ca)) _1 independent domain(s) · ✓ page: verified against full page E8_
+- **low** - Google Trends shows search interest in DiskANN up 28% over the past year; searches for the hnswlib and scann Python packages are too rare to compare ([E22](https://trends.google.com/trends/explore?date=today%2012-m&q=python%20hnswlib%2Cdiskann%2Cpython%20scann)) _1 independent domain(s) · ✓ API: verified against live API record E22_
+
+## Side by side
+
+_Primary data (PyPI / npm / GitHub / OSV.dev / Google Trends), computed in code._
+
+| Metric | hnswlib | diskann | scann | Source |
+|---|---|---|---|---|
+| Latest version | 0.8.0 | - | 1.4.2 | [E20](https://pypi.org/project/hnswlib/), [E21](https://pypi.org/project/scann/) |
+| Latest release | 2023-12-03 | - | 2025-08-29 | [E20](https://pypi.org/project/hnswlib/), [E21](https://pypi.org/project/scann/) |
+| Downloads, last week | 148,075 | - | 12,457 | [E20](https://pypi.org/project/hnswlib/), [E21](https://pypi.org/project/scann/) |
+| OSV advisories on latest | 0 | - | 0 | [E20](https://pypi.org/project/hnswlib/), [E21](https://pypi.org/project/scann/) |
+| Search interest, last 3 months (Trends) | 0 (too little search volume) | 45 (up 28%) | 0 (too little search volume) | [E22](https://trends.google.com/trends/explore?date=today%2012-m&q=python%20hnswlib%2Cdiskann%2Cpython%20scann) |
 
 ## Open questions
 
-- Which index offers the best trade‑off for specific workloads (e.g., inner‑product vs L2 distance, latency vs recall) remains unresolved
-- Long‑term ecosystem support and integration depth for DiskANN and ScaNN compared to the more mature HNSW libraries are not fully documented
-- Performance of these indexes on non‑SSD hardware or in constrained memory environments lacks clear evidence
+- Direct head‑to‑head comparisons of HNSW vs ScaNN on identical datasets and metrics are missing; memory‑usage trade‑offs for each index under identical workloads are not documented; GPU acceleration support and performance for each index are not covered in the evidence.
+
+## Round 2
+
+Gaps the first draft left open:
+
+- Only weak support (1 independent domain(s)): DiskANN achieved 95% recall with ~3 ms latency on a 1 B‑vector dataset using only 64 GB RAM + SSD, outperforming HNSW in that benchmark
+- Only weak support (1 independent domain(s)): HNSW recall degrades faster than flat search as corpus size grows, while ScaNN sustains higher query throughput
+- Only weak support (1 independent domain(s)): DiskANN supports up to 16,000 dimensions, whereas HNSW tops out at 2,000 dimensions
+- Only weak support (1 independent domain(s)): ScaNN focuses on high‑recall, high‑throughput inner‑product search, making it suitable for large‑scale workloads
+- Only weak support (1 independent domain(s)): Google Trends shows rising interest in DiskANN over the last 3 months, while interest in hnswlib and scann has dropped
+- Open question: Direct head‑to‑head comparisons of HNSW vs ScaNN on identical datasets and metrics are missing; memory‑usage trade‑offs for each index under identical workloads are not documented; GPU acceleration support and performance for each index are not covered in the evidence.
+
+Follow-up searches:
+
+- `google` hnswlib stars site:github.com
+- `google` DiskANN 1 billion vectors benchmark 95% recall 3 ms site:microsoft.com
 
 ## Evidence
 
@@ -42,19 +69,19 @@
 | E18 | academic | google_scholar | 2026-01-01 | [Vector Clustering for Disk-based HNSW](https://s-space.snu.ac.kr/handle/10371/234121) |
 | E19 | academic | google_scholar | 2026-01-01 | [Approximate Nearest Neighbor Search over Temporal Vector Data](https://ieeexplore.ieee.org/abstract/document/11647349/) |
 | E20 | package_registry | live API | 2023-12-03 | [PYPI record for hnswlib](https://pypi.org/project/hnswlib/) |
-| E21 | repository | live API | 2026-03-28 | [GITHUB record for nmslib/hnswlib](https://github.com/nmslib/hnswlib) |
-| E22 | repository | live API | 2026-09-11 | [GITHUB record for microsoft/DiskANN](https://github.com/microsoft/DiskANN) |
-| E23 | package_registry | live API | 2025-08-29 | [PYPI record for scann](https://pypi.org/project/scann/) |
+| E21 | package_registry | live API | 2025-08-29 | [PYPI record for scann](https://pypi.org/project/scann/) |
+| E22 | other | google_trends |  | [Google Trends: python hnswlib vs diskann vs python scann (past 12 months)](https://trends.google.com/trends/explore?date=today%2012-m&q=python%20hnswlib%2Cdiskann%2Cpython%20scann) |
 
-_SerpApi searches: 4 live, 3 cached. Unsupported claims dropped: 0. Off-subject citations unlinked: 0. Model: openai/gpt-oss-120b. Generated 2026-09-24 13:27 UTC by citescout._
+_SerpApi searches: 0 live, 10 cached. Pages read in full: 4; claims verified against a full page or live API record: 6/8. Unsupported claims dropped: 0. Off-subject citations unlinked: 0. Model: openai/gpt-oss-20b. Generated 2026-09-24 14:48 UTC by citescout._
 
 ## Review
 
-This brief is a real citescout run (live SerpApi searches across google, google_news and google_scholar; output unchanged except as listed). The Scholar search was added by the planner's code rule for research questions, and Scholar citation counts appear in the Via column. Every claim-to-citation pair was then checked one by one (by the AI coding agent that built this project, see the AI disclosure in the README) against the cited snippet, and against the source itself where the snippet was cut off. Changes made in review:
+This brief is a real citescout run (SerpApi results replayed from the cache of the live runs, output unchanged except as listed). Every claim-to-citation pair, the side-by-side table and the disagreements were then checked one by one (by the AI coding agent that built this project, see the AI disclosure in the README) against the cited snippet, and against the page itself where the snippet was thin. Changes made in review:
 
-- Microsoft benchmark claim: reworded to say a Medium blog (E1) reports Microsoft's numbers. The model had attributed the claim to Microsoft directly, and the snippet is cut off before the HNSW side of the comparison, so "outperforming HNSW" was removed.
-- Scholar claim (E14): narrowed to what the paper covers, entity resolution on two one-million-vector datasets (checked against the paper's abstract at https://doi.org/10.1177/18724981251388888). "recall and throughput" was removed because the snippet says only "superior".
-- Verdict: rewritten. The generated verdict said DiskANN and ScaNN "outperform HNSW on several key metrics" as a general finding, which is stronger than seven low-confidence, mostly single-source claims support. The new verdict cites the same evidence.
-- SSD claim: removed "enabling lower RAM footprints than HNSW which traditionally requires more memory" and the E5 citation. E2 says DiskANN is designed for SSD-resident operation; neither E2 nor E5 (which is about dimension limits) says anything about HNSW's memory use.
+- Verdict: the model's verdict had no citations and claimed DiskANN and ScaNN deliver "higher recall, lower latency, and better query throughput", which is more than the evidence shows. Rewritten from the cited claims. The last sentence ("HNSW is still widely used") is the reviewer's summary.
+- DiskANN benchmark claim: attributed to the Medium article that reports Microsoft's benchmark (E1). "Outperforming HNSW" was dropped because the snippet cuts off before the HNSW numbers.
+- Release claim: "indicating active maintenance" removed. hnswlib's last PyPI release is from 2023.
+- Scholar claim: the model cited four papers for "partition-based methods like ScaNN and DiskANN outperform graph-based methods". DiskANN is graph-based, and only E14 makes that comparison (its abstract was checked earlier, https://doi.org/10.1177/18724981251388888). Narrowed to E14's finding.
+- Trends claim: the model read "down 100%" for hnswlib and scann as falling interest. Those series are mostly zeros with rare spikes, which is noise. Code now reports "too little search volume" for series like that (fixed during this review, and E22 and the table were recomputed), and the claim was rewritten.
 
-Everything not listed was checked and left as generated. On the first run of this question (before the planner fix), the support gate unlinked one off-subject citation and dropped the claim that depended on it.
+Everything not listed was checked and left as generated. Confidence and the deep-read column were recomputed by code after the edits.
