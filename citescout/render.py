@@ -60,7 +60,8 @@ def to_console(brief: Brief, console: Console) -> None:
     for e in brief.evidence:
         if e.id not in cited:
             continue
-        ev.add_row(e.id, e.source_type.value, e.engine.value if e.engine else "live API",
+        via = (e.engine.value if e.engine else "live API") + (f"\ncited by {e.cited_by:,}" if e.cited_by else "")
+        ev.add_row(e.id, e.source_type.value, via,
                    e.published.date().isoformat() if e.published else "-",
                    Text(f"{e.title[:70]}\n{e.url}", style=f"link {e.url}"))
     console.print(ev)
@@ -94,7 +95,10 @@ def to_markdown(brief: Brief) -> str:
     for e in brief.evidence:
         date = e.published.date().isoformat() if e.published else ""
         title = e.title.replace("|", "/")[:90]
-        lines.append(f"| {e.id} | {e.source_type.value} | {e.engine.value if e.engine else 'live API'} | {date} | [{title}]({e.url}) |")
+        via = e.engine.value if e.engine else "live API"
+        if e.cited_by:
+            via += f" · cited by {e.cited_by:,}"
+        lines.append(f"| {e.id} | {e.source_type.value} | {via} | {date} | [{title}]({e.url}) |")
     lines += ["", f"_SerpApi searches: {brief.searches_used} live, {brief.cache_hits} cached. "
                   f"Unsupported claims dropped: {brief.dropped_claims}. Off-subject citations unlinked: {brief.unlinked_citations}. Model: {brief.model}. "
                   f"Generated {brief.generated_at:%Y-%m-%d %H:%M UTC} by citescout._"]

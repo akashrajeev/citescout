@@ -58,3 +58,14 @@ def test_scholar_params_and_classification():
     assert p["engine"] == "google_scholar" and "as_ylo" in p
     assert classify("https://nvd.nist.gov/vuln/detail/CVE-1") == SourceType.ADVISORY
     assert classify("https://stackoverflow.com/q/1") == SourceType.FORUM
+
+
+def test_scholar_citation_counts_are_kept(tmp_path):
+    scholar = {"organic_results": [{"position": 1, "link": "https://arxiv.org/abs/1603.09320",
+                                    "title": "Efficient and robust approximate nearest neighbor search using HNSW graphs",
+                                    "snippet": "We present a new approach", "publication_info": {"summary": "YA Malkov - IEEE TPAMI, 2018"},
+                                    "inline_links": {"cited_by": {"total": 2412}}}]}
+    s = SerpSearcher("k", tmp_path, search_fn=lambda p: scholar)
+    ev = s.run(SearchTask(engine=Engine.GOOGLE_SCHOLAR, query="hnsw", purpose="p"), 1)
+    assert ev[0].cited_by == 2412 and ev[0].source_type == SourceType.ACADEMIC
+    assert ev[0].published.year == 2018 and "(cited by 2412)" in ev[0].snippet

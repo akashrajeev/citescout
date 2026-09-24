@@ -71,6 +71,7 @@ class Evidence(BaseModel):
     source_type: SourceType
     published: datetime | None = None
     rank: int | None = None
+    cited_by: int | None = None  # Google Scholar citation count
 
 
 class RegistryFact(BaseModel):

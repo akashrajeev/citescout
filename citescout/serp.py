@@ -227,6 +227,7 @@ def normalize(task: SearchTask, data: dict[str, Any], id_start: int) -> list[Evi
             if cited:
                 snippet = f"{snippet} (cited by {cited})"
             out.append(_ev(i, task, r["link"], r.get("title", ""), snippet,
-                           source_name=info or None, published=parse_date(info), rank=r.get("position")))
+                           source_name=info or None, published=parse_date(info), rank=r.get("position"),
+                           cited_by=int(cited) if cited else None))
             i += 1
     return out
