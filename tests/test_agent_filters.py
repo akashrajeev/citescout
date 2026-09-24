@@ -23,3 +23,20 @@ def test_alias_spellings_count_as_mentions():
     paper = ev(1, "https://arxiv.org/abs/1603.09320", "Approximate nearest neighbor search using HNSW graphs",
                engine=Engine.GOOGLE_SCHOLAR)
     assert _relevant([paper], subjects) == [paper]
+
+
+def test_official_docs_means_the_projects_own_site():
+    from citescout.agent import _mark_official
+    from citescout.models import SourceType
+    subjects = [Subject(name="httpx", ecosystem="pypi", repo="encode/httpx"),
+                Subject(name="moment", ecosystem="npm", repo="moment/moment")]
+    third_party = ev(1, "https://docs.bswen.com/blog/2026-03-05-httpx-library-status/", "HTTPX status in 2026")
+    own = ev(2, "https://www.python-httpx.org/changelog/", "httpx changelog")
+    named = ev(3, "https://momentjs.com/docs/", "Moment.js docs")
+    stdlib = ev(4, "https://docs.python.org/3/library/asyncio.html", "asyncio")
+    assert third_party.source_type == SourceType.OFFICIAL_DOCS  # the URL rule alone is fooled by "docs."
+    _mark_official([third_party, own, named, stdlib], subjects)
+    assert third_party.source_type == SourceType.BLOG
+    assert own.source_type == SourceType.OFFICIAL_DOCS
+    assert named.source_type == SourceType.OFFICIAL_DOCS
+    assert stdlib.source_type == SourceType.OFFICIAL_DOCS

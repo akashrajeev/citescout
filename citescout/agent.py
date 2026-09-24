@@ -67,15 +67,29 @@ def _relevant(evidence: list[Evidence], plan_subjects: list) -> list[Evidence]:
     return kept
 
 
+_PLATFORM_DOCS = {"docs.python.org", "developer.mozilla.org", "docs.github.com", "nodejs.org", "peps.python.org"}
+
+
 def _mark_official(evidence: list[Evidence], plan_subjects: list) -> None:
-    """A site named after the project (momentjs.com, docs.pydantic.dev) is its official site."""
+    """Official means the project's own site.
+
+    Up: a site named after the project (momentjs.com, docs.pydantic.dev) is its official site.
+    Down: a docs.* host that belongs to someone else (docs.bswen.com writing about httpx) is a
+    third-party blog, not official documentation, and must not get official-docs weight.
+    """
     from citescout.models import SourceType
 
     names = {s.name.lower().replace(".", "").replace("-", "") for s in plan_subjects if len(s.name) >= 3}
+    names |= {s.repo.split("/")[-1].lower().replace(".", "").replace("-", "")
+              for s in plan_subjects if s.repo and "/" in s.repo}
     for e in evidence:
         host = e.domain.replace(".", "").replace("-", "")
-        if e.source_type in (SourceType.OTHER, SourceType.BLOG) and any(n in host for n in names):
+        owned = any(n in host for n in names)
+        if e.source_type in (SourceType.OTHER, SourceType.BLOG) and owned:
             e.source_type = SourceType.OFFICIAL_DOCS
+        elif (e.source_type == SourceType.OFFICIAL_DOCS and names and not owned
+              and e.domain.removeprefix("www.") not in _PLATFORM_DOCS):
+            e.source_type = SourceType.BLOG
 
 
 def _dedupe(evidence: list[Evidence]) -> list[Evidence]:
