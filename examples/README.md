@@ -4,6 +4,7 @@
 |---|---|---|
 | [requests-vs-httpx.md](requests-vs-httpx.md) | library maintenance / switch decision | google, google_news |
 | [momentjs-alternatives.md](momentjs-alternatives.md) | library maintenance / alternatives | google, google_news |
+| [hnsw-ann-index.md](hnsw-ann-index.md) | research / algorithm comparison | google, google_news, **google_scholar** (with citation counts) |
 
 Each brief is the Markdown export of a real run (`citescout ask "..." --markdown ...`) with a
 **Human review** section at the end. Every claim-to-citation pair was checked by hand against
