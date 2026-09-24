@@ -14,6 +14,7 @@ from typing import Any
 from citescout import registry
 from citescout.checks import rule_contradictions, score_claims
 from citescout.config import Settings
+from citescout.deepread import PageStore, deep_verify
 from citescout.llm import LLM
 from citescout.models import Brief, Evidence, Plan, SearchTask
 from citescout.planner import enforce, make_plan
@@ -198,11 +199,16 @@ class ResearchAgent:
         known = {tuple(sorted(c.citations)) for c in contradictions}
         contradictions += [r for r in rules if tuple(sorted(r.citations)) not in known]
         score_claims(claims, evidence)
+        t("deepread.start", {"claims": len(claims)})
+        deep = deep_verify(claims, evidence, PageStore(self.settings.cache_dir, self.settings.offline))
+        t("deepread.done", {"pages": deep.pages_read, "verified": deep.page_verified,
+                            "unconfirmed": deep.unconfirmed})
         t("synthesize.done", {"claims": len(claims), "contradictions": len(contradictions), "dropped": dropped})
 
         return Brief(
             question=question, verdict=verdict, claims=claims, contradictions=contradictions,
             open_questions=open_q, evidence=evidence, registry_facts=facts, plan=plan,
             searches_used=self.searcher.stats.live_calls, cache_hits=self.searcher.stats.cache_hits,
-            dropped_claims=dropped, unlinked_citations=len(support.unlinked), model=self.llm.used_model, generated_at=datetime.now(timezone.utc),
+            dropped_claims=dropped, pages_read=deep.pages_read,
+            claims_page_verified=deep.page_verified, claims_unconfirmed=deep.unconfirmed, unlinked_citations=len(support.unlinked), model=self.llm.used_model, generated_at=datetime.now(timezone.utc),
         )

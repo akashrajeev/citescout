@@ -26,6 +26,10 @@ def _cite_text(s: str) -> Text:
     return out
 
 
+_READ_MARK = {"page": "✓ page", "snippet": "~ snip", "unconfirmed": "✗ none"}
+_READ_STYLE = {"page": "green", "snippet": "yellow", "unconfirmed": "red"}
+
+
 def to_console(brief: Brief, console: Console) -> None:
     console.print(Panel(_cite_text(brief.verdict), title=f"[b]Verdict[/b]  {brief.question}", border_style="cyan"))
 
@@ -33,9 +37,11 @@ def to_console(brief: Brief, console: Console) -> None:
     t.add_column("Confidence", width=10)
     t.add_column("Claim", ratio=1)
     t.add_column("Sources", width=14)
+    t.add_column("Read", width=6)
     for c in brief.claims:
         t.add_row(Text(c.confidence.value, style=_CONF_STYLE[c.confidence]), _cite_text(c.text),
-                  ", ".join(c.citations))
+                  ", ".join(c.citations), Text(_READ_MARK.get(c.verification or "", "-"),
+                                               style=_READ_STYLE.get(c.verification or "", "dim")))
     console.print(t)
 
     if brief.contradictions:
@@ -69,7 +75,8 @@ def to_console(brief: Brief, console: Console) -> None:
         console.print(Panel("\n".join(f"• {q}" for q in brief.open_questions), title="Open questions", border_style="dim"))
     console.print(
         f"[dim]SerpApi searches: {brief.searches_used} live, {brief.cache_hits} cached · "
-        f"evidence: {len(brief.evidence)} · unsupported claims dropped: {brief.dropped_claims} · off-subject citations unlinked: {brief.unlinked_citations} · model: {brief.model}[/dim]")
+        f"evidence: {len(brief.evidence)} · pages read: {brief.pages_read} · claims verified on page: "
+        f"{brief.claims_page_verified}/{len(brief.claims)} · unsupported claims dropped: {brief.dropped_claims} · off-subject citations unlinked: {brief.unlinked_citations} · model: {brief.model}[/dim]")
 
 
 def to_markdown(brief: Brief) -> str:
@@ -81,7 +88,8 @@ def to_markdown(brief: Brief) -> str:
     lines = [f"# {brief.question}", "", f"**Verdict:** {md(brief.verdict)}", "", "## Claims", ""]
     for c in brief.claims:
         cites = ", ".join(f"[{i}]({link[i]})" for i in c.citations)
-        lines.append(f"- **{c.confidence.value}** - {md(c.text)} ({cites}) _{c.confidence_reason}_")
+        read = f" · {_READ_MARK[c.verification]} {c.verification_detail}" if c.verification in _READ_MARK else ""
+        lines.append(f"- **{c.confidence.value}** - {md(c.text)} ({cites}) _{c.confidence_reason}{read}_")
     if brief.contradictions:
         lines += ["", "## Sources disagree", ""]
         for c in brief.contradictions:
@@ -100,6 +108,8 @@ def to_markdown(brief: Brief) -> str:
             via += f" · cited by {e.cited_by:,}"
         lines.append(f"| {e.id} | {e.source_type.value} | {via} | {date} | [{title}]({e.url}) |")
     lines += ["", f"_SerpApi searches: {brief.searches_used} live, {brief.cache_hits} cached. "
+                  f"Pages read in full: {brief.pages_read}; claims verified against a full page or live API record: "
+                  f"{brief.claims_page_verified}/{len(brief.claims)}. "
                   f"Unsupported claims dropped: {brief.dropped_claims}. Off-subject citations unlinked: {brief.unlinked_citations}. Model: {brief.model}. "
                   f"Generated {brief.generated_at:%Y-%m-%d %H:%M UTC} by citescout._"]
     return "\n".join(lines) + "\n"

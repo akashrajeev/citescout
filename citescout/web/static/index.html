@@ -81,6 +81,8 @@
           border-radius:99px; padding:3px 9px; white-space:nowrap; }
   .conf.high { color:var(--strong); background:#e8f4ec; }
   .conf.medium { color:var(--moderate); background:#faf3e1; }
+  .read { font:600 10.5px "JetBrains Mono",monospace; white-space:nowrap; }
+  .read.page { color:var(--strong); } .read.snippet { color:var(--moderate); } .read.unconfirmed { color:var(--weak); } .read.none { color:var(--faint); }
   .conf.low { color:var(--weak); background:#fae9e6; }
   .disagree { border:1px solid #eccfc8; background:#fdf8f5; }
   .disagree .kicker { color:var(--weak); }
@@ -137,9 +139,10 @@ function cites(text, urls){
 function render(b){
   const urls = Object.fromEntries(b.evidence.map(e => [e.id, e.url]));
   let h = `<div class="card"><p class="kicker">Verdict</p><div id="verdict">${cites(b.verdict, urls)}</div></div>`;
-  h += `<div class="card"><p class="kicker">Claims · checked</p><table><tr><th>Confidence</th><th>Claim</th><th>Sources</th></tr>`;
+  h += `<div class="card"><p class="kicker">Claims · checked</p><table><tr><th>Confidence</th><th>Claim</th><th>Sources</th><th>Read</th></tr>`;
   for (const c of b.claims) h += `<tr><td><span class="conf ${c.confidence}" title="${esc(c.confidence_reason)}">${c.confidence}</span></td>
-     <td>${esc(c.text)}</td><td>${c.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank" title="${esc(urls[i])}">${i}</a>`).join(" ")}</td></tr>`;
+     <td>${esc(c.text)}</td><td>${c.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank" title="${esc(urls[i])}">${i}</a>`).join(" ")}</td>
+     <td><span class="read ${c.verification||'none'}" title="${esc(c.verification_detail||'')}">${({page:"✓ page",snippet:"~ snippet",unconfirmed:"✗ not found"})[c.verification]||"-"}</span></td></tr>`;
   h += `</table></div>`;
   if (b.contradictions.length){
     h += `<div class="card disagree"><p class="kicker" style="color:var(--weak)">Sources disagree</p>`;
@@ -153,7 +156,7 @@ function render(b){
      <td style="font-size:12.5px;color:var(--faint)">${e.engine ?? "live API"}${e.cited_by ? `<br>cited by ${e.cited_by.toLocaleString()}` : ""}</td><td style="font-size:12.5px;color:var(--faint)">${(e.published||"").slice(0,10)}</td>
      <td><a href="${esc(e.url)}" target="_blank">${esc(e.title)}</a><br><span class="muted" style="font-size:12px">${esc(e.domain)}</span></td></tr>`;
   h += `</table><div class="stats"><span><b>${b.searches_used}</b> live SerpApi searches</span><span><b>${b.cache_hits}</b> served from cache</span>
-    <span><b>${b.evidence.length}</b> sources gathered</span><span><b>${b.dropped_claims}</b> unsupported claims dropped</span><span><b>${b.unlinked_citations ?? 0}</b> off-subject citations unlinked</span><span>${esc(b.model)}</span></div></div>`;
+    <span><b>${b.evidence.length}</b> sources gathered</span><span><b>${b.claims_page_verified ?? 0}/${b.claims.length}</b> claims verified on the full page (${b.pages_read ?? 0} pages read)</span><span><b>${b.dropped_claims}</b> unsupported claims dropped</span><span><b>${b.unlinked_citations ?? 0}</b> off-subject citations unlinked</span><span>${esc(b.model)}</span></div></div>`;
   if (b.open_questions.length) h += `<div class="card"><p class="kicker">Open questions</p><ul>${b.open_questions.map(q=>`<li>${esc(q)}</li>`).join("")}</ul></div>`;
   $("#out").innerHTML = h;
 }
@@ -175,6 +178,9 @@ $("#f").onsubmit = ev => {
   es.addEventListener("synthesize.retry", m => line(`<span class="muted">retry: ${esc(JSON.parse(m.data).reason)}</span>`));
   es.addEventListener("support.done", m => { const d = JSON.parse(m.data);
     line(`<span class="muted">unlinked ${d.unlinked} off-subject citation(s), ${d.dropped} claim(s) dropped</span>`); });
+  es.addEventListener("deepread.start", m => line(`<b class="busy">Reading cited pages in full</b>`));
+  es.addEventListener("deepread.done", m => { const d = JSON.parse(m.data);
+    line(`<span class="ok">✓</span> read ${d.pages} page(s) · ${d.verified} claim(s) verified on the page · <span class="${d.unconfirmed?'err':'muted'}">${d.unconfirmed} not found, confidence lowered</span>`); });
   es.addEventListener("synthesize.done", m => { const d = JSON.parse(m.data);
     line(`${d.claims} claims · ${d.contradictions} disagreement(s) · ${d.dropped} unsupported dropped`); });
   es.addEventListener("brief", m => { render(JSON.parse(m.data)); es.close(); $("#go").disabled = false; });

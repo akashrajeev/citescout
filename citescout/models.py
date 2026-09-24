@@ -101,6 +101,8 @@ class Claim(BaseModel):
     citations: list[str] = Field(description="Evidence ids, e.g. ['E3', 'E7']")
     confidence: Confidence = Confidence.LOW
     confidence_reason: str = ""
+    verification: str | None = None  # "page" | "snippet" | "unconfirmed" (deep-read result)
+    verification_detail: str = ""
 
 
 class Contradiction(BaseModel):
@@ -123,6 +125,9 @@ class Brief(BaseModel):
     searches_used: int = 0
     cache_hits: int = 0
     dropped_claims: int = 0
+    pages_read: int = 0            # cited pages fetched and read in full
+    claims_page_verified: int = 0  # claims whose facts were found in a cited page or API record
+    claims_unconfirmed: int = 0    # claims no cited source's full text backs (confidence lowered)
     unlinked_citations: int = 0  # real ids removed because the source never discusses the claim's subject
     model: str | None = None
     generated_at: datetime

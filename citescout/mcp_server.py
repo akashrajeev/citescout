@@ -33,7 +33,8 @@ def brief_payload(brief: Brief) -> dict[str, Any]:
         "question": brief.question,
         "verdict": brief.verdict,
         "claims": [{"text": c.text, "citations": c.citations, "confidence": c.confidence.value,
-                    "why": c.confidence_reason} for c in brief.claims],
+                    "why": c.confidence_reason, "deep_read": c.verification,
+                    "deep_read_detail": c.verification_detail} for c in brief.claims],
         "contradictions": [{"topic": c.topic, "positions": c.positions, "detected_by": c.detected_by,
                             "resolution": c.resolution} for c in brief.contradictions],
         "evidence": [{"id": e.id, "url": e.url, "title": e.title, "type": e.source_type.value,
@@ -43,6 +44,8 @@ def brief_payload(brief: Brief) -> dict[str, Any]:
         "open_questions": brief.open_questions,
         "checks": {"unsupported_claims_dropped": brief.dropped_claims,
                    "off_subject_citations_unlinked": brief.unlinked_citations,
+                   "pages_read": brief.pages_read, "claims_page_verified": brief.claims_page_verified,
+                   "claims_unconfirmed": brief.claims_unconfirmed,
                    "serpapi_searches_live": brief.searches_used, "serpapi_cache_hits": brief.cache_hits},
         "markdown": to_markdown(brief),
     }

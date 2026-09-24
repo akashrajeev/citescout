@@ -42,6 +42,11 @@ def _trace(event: str, data: dict) -> None:
         console.print(f"  [dim]dropped {data['dropped']} off-topic result(s) that never mention the subject[/dim]")
     elif event == "synthesize.start":
         console.print(f"[bold]Cross-checking[/bold] {data['evidence']} sources...")
+    elif event == "deepread.start":
+        console.print(f"[bold]Reading[/bold] the cited pages in full to check {data['claims']} claims...")
+    elif event == "deepread.done":
+        low = f"[red]{data['unconfirmed']} not found (confidence lowered)[/red]" if data["unconfirmed"] else "0 not found"
+        console.print(f"  [green]✓[/green] read {data['pages']} page(s): {data['verified']} claim(s) verified on the page, {low}")
     elif event == "synthesize.retry":
         console.print(f"  [yellow]retrying synthesis:[/yellow] {data['reason']}")
     elif event == "support.done":
