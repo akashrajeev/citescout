@@ -70,6 +70,10 @@ def trend_summary(series: TrendSeries) -> list[tuple[str, int, str]]:
     for term, vals in zip(series.terms, series.values):
         k = max(1, len(vals) // 4)
         recent, early = _avg(vals[-k:]), _avg(vals[:k])
+        if max(vals, default=0) < 5 or sum(1 for v in vals if v == 0) > len(vals) // 2:
+            # Trends reports tiny volumes as mostly zeros with rare spikes; a "down 100%" there is noise.
+            out.append((term, round(recent), "too little search volume"))
+            continue
         if early == 0:
             direction = "new" if recent else "flat"
         else:
@@ -82,7 +86,8 @@ def trend_summary(series: TrendSeries) -> list[tuple[str, int, str]]:
 
 
 def trends_evidence(series: TrendSeries, eid: str) -> Evidence:
-    parts = [f"{t}: average interest {a} over the last 3 months ({d} vs the first 3 months)"
+    parts = [f"{t}: too little search volume to compare" if d == "too little search volume" else
+             f"{t}: average interest {a} over the last 3 months ({d} vs the first 3 months)"
              for t, a, d in trend_summary(series)]
     return Evidence(id=eid, engine=Engine.GOOGLE_TRENDS, query=",".join(series.terms), url=series.url,
                     title="Google Trends: " + " vs ".join(series.terms) + " (past 12 months)",

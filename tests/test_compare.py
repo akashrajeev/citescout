@@ -59,3 +59,20 @@ def test_build_table_cites_every_cell():
     assert rows["OSV advisories on latest"].values == ["0", "1 (CVE-2026-1)"]
     assert rows["Search interest, last 3 months (Trends)"].citations == ["E13"]
     assert compare.build(SUBJ, facts[:1], None, None) is None  # one subject with data is not a comparison
+
+
+def test_tiny_trends_volume_is_not_a_trend():
+    data = {"interest_over_time": {"timeline_data": [
+        {"date": f"w{i}", "values": [{"query": "python requests", "extracted_value": 1 if i < 4 else 0},
+                                     {"query": "python httpx", "extracted_value": 50}]} for i in range(8)]}}
+    s = compare.parse_trends(compare.trends_task(SUBJ), data)
+    assert compare.trend_summary(s)[0] == ("python requests", 0, "too little search volume")
+
+
+def test_mostly_zero_series_is_not_a_trend():
+    data = {"interest_over_time": {"timeline_data": [
+        {"date": f"w{i}", "values": [{"query": "python requests", "extracted_value": 16 if i == 2 else 0},
+                                     {"query": "python httpx", "extracted_value": 50}]} for i in range(8)]}}
+    s = compare.parse_trends(compare.trends_task(SUBJ), data)
+    assert compare.trend_summary(s)[0][2] == "too little search volume"
+    assert compare.trend_summary(s)[1][2] == "flat"
