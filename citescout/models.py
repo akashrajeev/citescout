@@ -87,6 +87,9 @@ class RegistryFact(BaseModel):
     open_issues: int | None = None
     stars: int | None = None
     deprecated_notice: str | None = None
+    weekly_downloads: int | None = None     # pypistats.org / npm downloads API, last 7 days
+    vulns_latest: list[str] | None = None   # OSV advisories affecting latest_version ("ID: summary")
+    vulns_total: int | None = None          # OSV advisories for the package across all versions
     evidence_id: str | None = None
 
 

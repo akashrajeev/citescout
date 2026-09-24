@@ -2,13 +2,15 @@
 
 SerpApi tells us what the web *says* ("v3 is the latest", "project abandoned"). These
 free, unauthenticated APIs tell us what is *recorded*: the actual latest version and its
-upload date on PyPI/npm, and whether a GitHub repo is archived or still getting pushes.
+upload date on PyPI/npm, whether a GitHub repo is archived or still getting pushes, weekly
+downloads (pypistats.org / npm), and known security advisories from OSV.dev.
 The synthesizer sees both, and the contradiction checker compares them.
 """
 
 from __future__ import annotations
 
 import os
+import time
 from datetime import datetime, timezone
 from typing import Any
 
@@ -81,6 +83,52 @@ def github(repo: str, client: httpx.Client) -> RegistryFact | None:
     return fact
 
 
+def weekly_downloads(name: str, ecosystem: str, client: httpx.Client) -> int | None:
+    """Last-7-day downloads: pypistats.org for PyPI, the npm downloads API for npm."""
+    try:
+        if ecosystem == "PyPI":
+            url = f"https://pypistats.org/api/packages/{name.lower()}/recent"
+            r = client.get(url)
+            if r.status_code == 429:  # pypistats rate-limits bursts; one polite retry
+                time.sleep(1.5)
+                r = client.get(url)
+            return int(r.json()["data"]["last_week"]) if r.status_code == 200 else None
+        r = client.get(f"https://api.npmjs.org/downloads/point/last-week/{name}")
+        return int(r.json()["downloads"]) if r.status_code == 200 else None
+    except (httpx.HTTPError, KeyError, ValueError, TypeError):
+        return None
+
+
+def osv(name: str, ecosystem: str, version: str | None, client: httpx.Client) -> tuple[list[str] | None, int | None]:
+    """Known advisories from OSV.dev (aggregates GitHub Security Advisories, PyPA, npm and more).
+
+    Returns (advisories affecting ``version`` as "ID: summary", advisory count across all versions).
+    """
+    def query(body: dict) -> list[dict] | None:
+        r = client.post("https://api.osv.dev/v1/query", json=body)
+        return (r.json().get("vulns") or []) if r.status_code == 200 else None
+
+    try:
+        pkg = {"name": name, "ecosystem": ecosystem}
+        every = query({"package": pkg})
+        latest = query({"package": pkg, "version": version}) if version else None
+    except (httpx.HTTPError, ValueError):
+        return None, None
+
+    def label(v: dict) -> str:
+        cve = next((a for a in v.get("aliases") or [] if a.startswith("CVE-")), None)
+        return f"{cve or v.get('id')}: {(v.get('summary') or '').strip()[:120]}"
+
+    return ([label(v) for v in latest] if latest is not None else None,
+            len(every) if every is not None else None)
+
+
+def enrich(fact: RegistryFact, ecosystem: str, client: httpx.Client) -> RegistryFact:
+    fact.weekly_downloads = weekly_downloads(fact.subject, ecosystem, client)
+    fact.vulns_latest, fact.vulns_total = osv(fact.subject, ecosystem, fact.latest_version, client)
+    return fact
+
+
 def verify(subjects: list[Subject], timeout: float = 10.0) -> list[RegistryFact]:
     """Look up every subject in the registries that apply. Failures are skipped, not fatal."""
     facts: list[RegistryFact] = []
@@ -90,10 +138,10 @@ def verify(subjects: list[Subject], timeout: float = 10.0) -> list[RegistryFact]
             try:
                 if eco in ("pypi", "python", ""):
                     if f := pypi(s.name, client):
-                        facts.append(f)
+                        facts.append(enrich(f, "PyPI", client))
                 if eco in ("npm", "javascript", "node"):
                     if f := npm(s.name, client):
-                        facts.append(f)
+                        facts.append(enrich(f, "npm", client))
                 if s.repo:
                     if f := github(s.repo, client):
                         facts.append(f)

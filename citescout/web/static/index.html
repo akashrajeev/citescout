@@ -176,7 +176,7 @@ $("#f").onsubmit = ev => {
   es.addEventListener("search.done", m => { const d = JSON.parse(m.data);
     line(d.error ? `<span class="err">✗</span> ${d.engine} ${esc(d.error)}` : `<span class="ok">✓</span> ${d.engine} · ${d.results} results`); });
   es.addEventListener("verify.done", m => { for (const f of JSON.parse(m.data).facts)
-    line(`<span class="ok">✓</span> ${f.source} ${esc(f.subject)} · ${esc([f.latest_version && "latest "+f.latest_version, f.latest_release && "released "+f.latest_release.slice(0,10), f.archived && "ARCHIVED", f.last_push && "push "+f.last_push.slice(0,10)].filter(Boolean).join(", "))}`); });
+    line(`<span class="ok">✓</span> ${f.source} ${esc(f.subject)} · ${esc([f.latest_version && "latest "+f.latest_version, f.latest_release && "released "+f.latest_release.slice(0,10), f.archived && "ARCHIVED", f.last_push && "push "+f.last_push.slice(0,10), f.weekly_downloads && f.weekly_downloads.toLocaleString()+" downloads/week", f.vulns_latest && (f.vulns_latest.length ? f.vulns_latest.length+" OSV advisories on latest" : "0 OSV advisories on latest")].filter(Boolean).join(", "))}`); });
   es.addEventListener("filter.done", m => line(`<span class="muted">dropped ${JSON.parse(m.data).dropped} off-topic results</span>`));
   es.addEventListener("synthesize.start", m => line(`<b class="busy">Cross-checking ${JSON.parse(m.data).evidence} sources</b>`));
   es.addEventListener("synthesize.retry", m => line(`<span class="muted">retry: ${esc(JSON.parse(m.data).reason)}</span>`));

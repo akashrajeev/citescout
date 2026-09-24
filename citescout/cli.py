@@ -36,7 +36,11 @@ def _trace(event: str, data: dict) -> None:
         for f in data["facts"]:
             bits = [f.get("latest_version") and f"latest {f['latest_version']}",
                     f.get("latest_release") and f"released {f['latest_release'][:10]}",
-                    f.get("archived") and "ARCHIVED", f.get("last_push") and f"last push {f['last_push'][:10]}"]
+                    f.get("archived") and "ARCHIVED", f.get("last_push") and f"last push {f['last_push'][:10]}",
+                    f.get("weekly_downloads") and f"{f['weekly_downloads']:,} downloads/week",
+                    f.get("vulns_latest") is not None and (
+                        f"[red]{len(f['vulns_latest'])} OSV advisories on latest[/red]" if f["vulns_latest"]
+                        else "0 OSV advisories on latest")]
             console.print(f"  [green]✓[/green] {f['source']:<14} {f['subject']}: " + ", ".join(b for b in bits if b))
     elif event == "filter.done":
         console.print(f"  [dim]dropped {data['dropped']} off-topic result(s) that never mention the subject[/dim]")

@@ -145,6 +145,16 @@ def registry_evidence(facts: list[RegistryFact], id_start: int) -> list[Evidence
             parts.append(f"{f.open_issues} open issues+PRs")
         if f.stars is not None:
             parts.append(f"{f.stars} stars")
+        if f.weekly_downloads is not None:
+            parts.append(f"{f.weekly_downloads:,} downloads in the last week")
+        if f.vulns_latest is not None:
+            if f.vulns_latest:
+                parts.append(f"{len(f.vulns_latest)} known OSV advisories affect {f.latest_version}: "
+                             + "; ".join(f.vulns_latest[:4]))
+            else:
+                parts.append(f"no known OSV advisories affect {f.latest_version}")
+        if f.vulns_total is not None:
+            parts.append(f"{f.vulns_total} OSV advisories across all versions")
         if f.deprecated_notice:
             parts.append(f"deprecation notice: {f.deprecated_notice[:200]}")
         eid = f"E{id_start + n}"

@@ -3,7 +3,9 @@
 1. Version check: web pages that name a "latest" version different from the registry.
 2. Status check: pages calling a project deprecated/abandoned/unmaintained while the
    registry shows a release in the last 6 months (or the reverse: the repo is archived).
-3. Confidence: computed per claim from the number of independent domains, the type of
+3. Security check: pages saying "no known vulnerabilities" while OSV lists advisories
+   affecting the latest release.
+4. Confidence: computed per claim from the number of independent domains, the type of
    each source, and freshness. The model never grades its own claims.
 """
 
@@ -22,6 +24,10 @@ _LATEST_RE = re.compile(r"(latest|newest|current|new)\s+(stable\s+)?(version|rel
 # phrasings that describe the whole project count.
 _DEAD_RE = re.compile(r"\b((?:is|has been|was|now)\s+deprecated|abandoned|unmaintained|no longer maintained|"
                       r"end[- ]of[- ]life|(?:is|was|been)\s+archived|dead project)\b", re.I)
+
+
+_SAFE_RE = re.compile(r"\b(no known (?:security )?vulnerabilit(?:y|ies)|no (?:known )?CVEs?|"
+                      r"zero (?:known )?vulnerabilit(?:y|ies)|no security (?:issues|advisories))\b", re.I)
 
 
 def _norm(v: str) -> tuple[int, ...]:
@@ -81,6 +87,20 @@ def rule_contradictions(evidence: list[Evidence], facts: list[RegistryFact]) -> 
                         citations=[e.id, f.evidence_id], detected_by="rule",
                         resolution=(f"v{ahead[0]} is probably a pre-release or not yet the default install; "
                                     f"a plain install gives {f.latest_version}."),
+                    ))
+                    break
+        # 1c) "no known vulnerabilities" on a page vs OSV advisories affecting the latest release
+        if f.vulns_latest:
+            for e in web:
+                text = f"{e.title} {e.snippet}"
+                if name in text.lower() and (m := _SAFE_RE.search(text)):
+                    out.append(Contradiction(
+                        topic=f"Does {f.subject} {f.latest_version} have known vulnerabilities?",
+                        positions=[f"{e.domain} says '{m.group(0)}' [{e.id}]",
+                                   f"OSV lists {len(f.vulns_latest)} advisory(ies) affecting {f.latest_version}, "
+                                   f"e.g. {f.vulns_latest[0].split(':')[0]} [{f.evidence_id}]"],
+                        citations=[e.id, f.evidence_id], detected_by="rule",
+                        resolution="OSV is the advisory database; the page is likely out of date or about another version.",
                     ))
                     break
         # 2) "dead project" claims vs recent activity
