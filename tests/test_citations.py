@@ -58,3 +58,11 @@ def test_rule_flags_stale_latest_version_and_dead_project_claims():
     assert "Latest lib version" in topics
     assert "Is lib still maintained?" in topics
     assert all(c.detected_by == "rule" for c in found)
+
+
+def test_api_deprecation_talk_is_not_a_dead_project_claim():
+    now = datetime.now(timezone.utc)
+    web = [ev(1, "https://reddit.com/r/x", snippet="pydantic has too much deprecation, deprecated APIs everywhere")]
+    reg = ev(2, "https://pypi.org/project/pydantic/", engine=None, st=SourceType.PACKAGE_REGISTRY)
+    fact = RegistryFact(subject="pydantic", source="pypi", url=reg.url, latest_release=now, evidence_id="E2")
+    assert rule_contradictions(web + [reg], [fact]) == []

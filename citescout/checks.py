@@ -17,7 +17,10 @@ from citescout.models import Claim, Confidence, Contradiction, Evidence, Registr
 
 _VERSION_RE = re.compile(r"\b(?:v|version\s*)?(\d+\.\d+(?:\.\d+)?)\b", re.I)
 _LATEST_RE = re.compile(r"(latest|newest|current|new)\s+(stable\s+)?(version|release)", re.I)
-_DEAD_RE = re.compile(r"\b(deprecated|abandoned|unmaintained|no longer maintained|end[- ]of[- ]life|archived|dead project)\b", re.I)
+# "deprecated" alone is too broad ("too much deprecation", "deprecated APIs"), so only
+# phrasings that describe the whole project count.
+_DEAD_RE = re.compile(r"\b((?:is|has been|was|now)\s+deprecated|abandoned|unmaintained|no longer maintained|"
+                      r"end[- ]of[- ]life|(?:is|was|been)\s+archived|dead project)\b", re.I)
 
 
 def _norm(v: str) -> tuple[int, ...]:
@@ -29,6 +32,7 @@ def rule_contradictions(evidence: list[Evidence], facts: list[RegistryFact]) -> 
     now = datetime.now(timezone.utc)
     web = [e for e in evidence if e.engine is not None]
 
+    flagged: set[str] = set()  # one "is it dead?" flag per web page, not one per registry
     for f in facts:
         if not f.evidence_id:
             continue
@@ -60,8 +64,9 @@ def rule_contradictions(evidence: list[Evidence], facts: list[RegistryFact]) -> 
         active = bool(recent) and max(recent) > now - timedelta(days=183)
         for e in web:
             text = f"{e.title} {e.snippet}"
-            if name in text.lower() and _DEAD_RE.search(text):
+            if name in text.lower() and _DEAD_RE.search(text) and e.id not in flagged:
                 if active and not f.archived:
+                    flagged.add(e.id)
                     out.append(Contradiction(
                         topic=f"Is {f.subject} still maintained?",
                         positions=[f"{e.domain} calls it '{_DEAD_RE.search(text).group(0)}' [{e.id}]",
