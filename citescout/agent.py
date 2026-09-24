@@ -117,7 +117,8 @@ class ResearchAgent:
         self.llm = llm or LLM(settings.require_llm(), settings.llm_base_url, settings.llm_model,
                               settings.llm_fallback_model)
         self.searcher = searcher or SerpSearcher(settings.require_serpapi() or None, settings.cache_dir,
-                                                 settings.max_searches + settings.followups, settings.offline)
+                                                 settings.max_searches + settings.followups, settings.offline,
+                                                 max_age_hours=settings.cache_max_age_hours)
         self.trace = trace or _noop
         self._trends = None
 

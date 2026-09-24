@@ -27,6 +27,10 @@ Asking a chatbot "is X still maintained?" gets you a confident answer from train
 - Confidence (`high` / `medium` / `low`) is **computed from the sources**, not written by the model: independent domains, source type, freshness, and whether live registry data backs the claim.
 - Contradictions are found twice: by the model reading the evidence, and by deterministic rules that compare what web pages say ("the latest version is 2.1", "this project is abandoned") with what PyPI / npm / GitHub actually record, and pages that say "no known vulnerabilities" while OSV.dev lists advisories against the latest release.
 
+## Follow a question over time
+
+Every brief is saved locally. `citescout diff "<question>"` runs the question again (re-searching anything cached more than 24 hours ago, `--max-age-hours` to change it) and shows what changed since the last run: new releases, newly archived repos, new OSV advisories, big download swings, claims that are new or gone, confidence changes, and disagreements that appeared or were settled. `citescout history` lists saved questions.
+
 ## Measured, not claimed
 
 `citescout eval` runs a fixed question set, saves each brief to [`evals/`](evals/) and scores the checks ([full table](docs/eval.md)). Re-running it costs 0 SerpApi credits because searches, plans and pages are cached, and `--rescore` re-checks the saved briefs with no model call at all.

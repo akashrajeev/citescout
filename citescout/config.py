@@ -23,6 +23,7 @@ class Settings:
     max_searches: int
     cache_dir: Path
     offline: bool = False
+    cache_max_age_hours: float | None = None  # SerpApi cache expiry; None = never (diff sets 24h)
     followups: int = 2  # round-2 searches aimed at the draft's gaps (0 = single pass)
 
     def require_serpapi(self) -> str:

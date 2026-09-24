@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 import json
 import sys
 from pathlib import Path
 
 from rich.console import Console
+from rich.panel import Panel
 
 from citescout.agent import ResearchAgent
 from citescout.config import ConfigError, load_settings
@@ -84,6 +86,12 @@ def main(argv: list[str] | None = None) -> int:
     ask.add_argument("--markdown", type=Path, help="Also write the brief as Markdown")
     ask.add_argument("--json", type=Path, help="Also write the full brief as JSON")
     sub.add_parser("budget", help="Show SerpApi credits left (Account API, free)")
+    df = sub.add_parser("diff", help="Run a question again and show what changed since the last saved brief")
+    df.add_argument("question")
+    df.add_argument("--offline", action="store_true", help="Cached SerpApi results only")
+    df.add_argument("--max-age-hours", type=float, default=24.0,
+                    help="Re-search anything cached longer than this (default 24; each re-search is 1 credit)")
+    sub.add_parser("history", help="List questions with saved briefs")
     ev = sub.add_parser("eval", help="Run the eval question set and score the checks (cached: 0 credits)")
     ev.add_argument("--questions", type=Path, help="Text file, one question per line")
     ev.add_argument("--offline", action="store_true", help="Cached SerpApi results only")
@@ -98,6 +106,25 @@ def main(argv: list[str] | None = None) -> int:
             acct = SerpSearcher(s.require_serpapi(), s.cache_dir).account() or {}
             console.print(f"{acct.get('plan_name')}: {acct.get('plan_searches_left')} of "
                           f"{acct.get('searches_per_month')} searches left this month")
+            return 0
+        if args.cmd == "history":
+            from citescout import history
+            s = load_settings()
+            for q, n, at in history.list_questions(s.cache_dir):
+                console.print(f"{at:%Y-%m-%d %H:%M}  [dim]{n} run(s)[/dim]  {q}")
+            return 0
+        if args.cmd == "diff":
+            from citescout import history
+            s = replace(load_settings(offline=args.offline), cache_max_age_hours=args.max_age_hours)
+            past = history.load_all(args.question, s.cache_dir)
+            if not past:
+                console.print("[yellow]No saved brief for this question yet; running it once to start the history.[/yellow]")
+            brief = ResearchAgent(s, trace=_trace).run(args.question)
+            history.save(brief, s.cache_dir)
+            to_console(brief, console)
+            if past:
+                console.print(Panel(history.to_text(history.diff(past[-1], brief)), title="[b]What changed[/b]",
+                                    border_style="magenta"))
             return 0
         if args.cmd == "eval":
             from citescout import evals
@@ -119,6 +146,8 @@ def main(argv: list[str] | None = None) -> int:
     except ConfigError as e:
         console.print(f"[red]{e}[/red]")
         return 2
+    from citescout import history
+    history.save(brief, s.cache_dir)
     to_console(brief, console)
     if args.markdown:
         args.markdown.write_text(to_markdown(brief))

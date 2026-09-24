@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -86,7 +87,9 @@ class SerpSearcher:
         max_searches: int = 8,
         offline: bool = False,
         search_fn: SearchFn | None = None,
+        max_age_hours: float | None = None,
     ) -> None:
+        self.max_age_hours = max_age_hours  # None = cached results never expire
         self.cache_dir = cache_dir / "serpapi"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.max_searches = max_searches
@@ -109,7 +112,9 @@ class SerpSearcher:
     def raw(self, task: SearchTask) -> dict[str, Any]:
         params = _params_for(task)
         path = self.cache_dir / f"{_cache_key(params)}.json"
-        if path.exists():
+        fresh = path.exists() and (self.max_age_hours is None or self.offline
+                                   or time.time() - path.stat().st_mtime < self.max_age_hours * 3600)
+        if fresh:
             self.stats.cache_hits += 1
             cached = json.loads(path.read_text())
             if cached["response"].get("error"):
