@@ -42,6 +42,16 @@ def _trace(event: str, data: dict) -> None:
         console.print(f"  [dim]dropped {data['dropped']} off-topic result(s) that never mention the subject[/dim]")
     elif event == "synthesize.start":
         console.print(f"[bold]Cross-checking[/bold] {data['evidence']} sources...")
+    elif event == "followup.plan":
+        console.print(f"[bold]Round 2:[/bold] {len(data['gaps'])} gap(s) in the draft")
+        for g in data["gaps"]:
+            console.print(f"  [yellow]gap[/yellow] {g[:150]}")
+        for s in data["searches"]:
+            console.print(f"  [magenta]{s['engine']:<14}[/magenta] {s['query']}\n  {'':14} [dim]{s['purpose']}[/dim]")
+    elif event == "followup.done":
+        console.print(f"  {data['new_results']} new result(s); rewriting the brief from {data['evidence']} sources")
+    elif event == "followup.error":
+        console.print(f"  [yellow]round 2 skipped:[/yellow] {data['error']}")
     elif event == "deepread.start":
         console.print(f"[bold]Reading[/bold] the cited pages in full to check {data['claims']} claims...")
     elif event == "deepread.done":
@@ -64,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
     ask.add_argument("question")
     ask.add_argument("--max-searches", type=int, default=None, help="SerpApi credit cap for this question")
     ask.add_argument("--offline", action="store_true", help="Use cached SerpApi results only (0 credits)")
+    ask.add_argument("--followups", type=int, default=None,
+                     help="Round-2 searches aimed at the draft's gaps (default 2, 0 = single pass)")
     ask.add_argument("--replan", action="store_true", help="Ignore the saved plan for this question")
     ask.add_argument("--markdown", type=Path, help="Also write the brief as Markdown")
     ask.add_argument("--json", type=Path, help="Also write the full brief as JSON")
@@ -77,7 +89,7 @@ def main(argv: list[str] | None = None) -> int:
             console.print(f"{acct.get('plan_name')}: {acct.get('plan_searches_left')} of "
                           f"{acct.get('searches_per_month')} searches left this month")
             return 0
-        s = load_settings(offline=args.offline, max_searches=args.max_searches)
+        s = load_settings(offline=args.offline, max_searches=args.max_searches, followups=args.followups)
         brief = ResearchAgent(s, trace=_trace, replan=args.replan).run(args.question)
     except ConfigError as e:
         console.print(f"[red]{e}[/red]")

@@ -122,6 +122,8 @@ class Brief(BaseModel):
     evidence: list[Evidence]
     registry_facts: list[RegistryFact] = Field(default_factory=list)
     plan: Plan
+    gaps: list[str] = Field(default_factory=list)            # weak spots found in the first draft
+    followups: list[SearchTask] = Field(default_factory=list)  # round-2 searches aimed at those gaps
     searches_used: int = 0
     cache_hits: int = 0
     dropped_claims: int = 0

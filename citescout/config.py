@@ -23,6 +23,7 @@ class Settings:
     max_searches: int
     cache_dir: Path
     offline: bool = False
+    followups: int = 2  # round-2 searches aimed at the draft's gaps (0 = single pass)
 
     def require_serpapi(self) -> str:
         if not self.serpapi_api_key and not self.offline:
@@ -41,7 +42,8 @@ class Settings:
         return self.llm_api_key
 
 
-def load_settings(*, offline: bool = False, max_searches: int | None = None) -> Settings:
+def load_settings(*, offline: bool = False, max_searches: int | None = None,
+                  followups: int | None = None) -> Settings:
     load_dotenv(Path.cwd() / ".env", override=False)
     return Settings(
         serpapi_api_key=os.getenv("SERPAPI_API_KEY") or None,
@@ -52,4 +54,5 @@ def load_settings(*, offline: bool = False, max_searches: int | None = None) -> 
         max_searches=max_searches or int(os.getenv("CITESCOUT_MAX_SEARCHES", "8")),
         cache_dir=Path(os.getenv("CITESCOUT_CACHE_DIR", ".citescout_cache")),
         offline=offline,
+        followups=max(0, min(3, followups if followups is not None else int(os.getenv("CITESCOUT_FOLLOWUPS", "2")))),
     )

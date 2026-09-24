@@ -15,6 +15,7 @@ from citescout import registry
 from citescout.checks import rule_contradictions, score_claims
 from citescout.config import Settings
 from citescout.deepread import PageStore, deep_verify
+from citescout.followup import find_gaps, plan_followups
 from citescout.llm import LLM
 from citescout.models import Brief, Evidence, Plan, SearchTask
 from citescout.planner import enforce, make_plan
@@ -116,7 +117,7 @@ class ResearchAgent:
         self.llm = llm or LLM(settings.require_llm(), settings.llm_base_url, settings.llm_model,
                               settings.llm_fallback_model)
         self.searcher = searcher or SerpSearcher(settings.require_serpapi() or None, settings.cache_dir,
-                                                 settings.max_searches, settings.offline)
+                                                 settings.max_searches + settings.followups, settings.offline)
         self.trace = trace or _noop
 
     def _plan(self, question: str) -> Plan:
@@ -135,13 +136,10 @@ class ResearchAgent:
         path.write_text(plan.model_dump_json(indent=1))
         return plan
 
-    def run(self, question: str) -> Brief:
+    def _search(self, tasks: list[SearchTask]) -> list[Evidence]:
+        """Run SerpApi searches in parallel. Failures are traced and skipped."""
         t = self.trace
-        t("plan.start", {"question": question})
-        plan = self._plan(question)
-        t("plan.done", {"plan": plan.model_dump(mode="json")})
 
-        # --- SerpApi searches, in parallel -------------------------------------------
         def run_one(task: SearchTask) -> tuple[SearchTask, list[Evidence], str | None]:
             try:
                 return task, self.searcher.run(task, 1), None
@@ -159,25 +157,23 @@ class ResearchAgent:
 
         raw: list[Evidence] = []
         with ThreadPoolExecutor(max_workers=4) as pool:
-            for task, found, err in pool.map(run_one, plan.searches):
+            for task, found, err in pool.map(run_one, tasks):
                 t("search.done", {"engine": task.engine.value, "query": task.query, "results": len(found),
-                                  "error": err})
+                                  "error": err, "followup": task.purpose.startswith("follow-up")})
                 raw.extend(found)
+        return raw
 
-        # --- primary-source verification --------------------------------------------
-        facts = registry.verify(plan.subjects) if plan.subjects else []
-        t("verify.done", {"facts": [f.model_dump(mode="json") for f in facts]})
-
-        kept = _relevant(raw, plan.subjects)
+    def _pool(self, raw: list[Evidence], plan: Plan, facts: list) -> list[Evidence]:
+        kept = _relevant([e.model_copy() for e in raw], plan.subjects)
         if len(kept) < len(raw):
-            t("filter.done", {"dropped": len(raw) - len(kept)})
+            self.trace("filter.done", {"dropped": len(raw) - len(kept)})
         _mark_official(kept, plan.subjects)
         evidence = _dedupe(kept)
-        evidence += registry_evidence(facts, len(evidence) + 1)
-        if not evidence:
-            raise RuntimeError("No evidence retrieved; check the SerpApi key, budget, or network.")
+        return evidence + registry_evidence(facts, len(evidence) + 1)
 
-        # --- synthesis + validation ---------------------------------------------------
+    def _write(self, question: str, evidence: list[Evidence], plan: Plan, facts: list) -> dict[str, Any]:
+        """Synthesize and run every check. Returns the pieces of a brief."""
+        t = self.trace
         t("synthesize.start", {"evidence": len(evidence)})
         verdict, claims, contradictions, open_q, dropped = validate(
             synthesize(self.llm, question, evidence), evidence)
@@ -204,11 +200,52 @@ class ResearchAgent:
         t("deepread.done", {"pages": deep.pages_read, "verified": deep.page_verified,
                             "unconfirmed": deep.unconfirmed})
         t("synthesize.done", {"claims": len(claims), "contradictions": len(contradictions), "dropped": dropped})
+        return dict(verdict=verdict, claims=claims, contradictions=contradictions, open_questions=open_q,
+                    dropped_claims=dropped, unlinked_citations=len(support.unlinked), pages_read=deep.pages_read,
+                    claims_page_verified=deep.page_verified, claims_unconfirmed=deep.unconfirmed)
+
+    def run(self, question: str) -> Brief:
+        t = self.trace
+        t("plan.start", {"question": question})
+        plan = self._plan(question)
+        t("plan.done", {"plan": plan.model_dump(mode="json")})
+
+        raw = self._search(plan.searches)
+        facts = registry.verify(plan.subjects) if plan.subjects else []
+        t("verify.done", {"facts": [f.model_dump(mode="json") for f in facts]})
+        evidence = self._pool(raw, plan, facts)
+        if not evidence:
+            raise RuntimeError("No evidence retrieved; check the SerpApi key, budget, or network.")
+        parts = self._write(question, evidence, plan, facts)
+
+        # --- round 2: search for what the draft could not settle ------------------------
+        gaps: list[str] = []
+        followups: list[SearchTask] = []
+        n = self.settings.followups
+        if n > 0:
+            gaps = find_gaps(parts["claims"], parts["contradictions"], parts["open_questions"],
+                             evidence, plan.subjects)
+        if gaps:
+            try:
+                followups = plan_followups(self.llm, question, gaps, plan.searches, n,
+                                           self.settings.cache_dir, self.replan)
+            except Exception as e:  # noqa: BLE001 - the draft is still a valid brief
+                t("followup.error", {"error": str(e)[:160]})
+            t("followup.plan", {"gaps": gaps, "searches": [f.model_dump(mode="json") for f in followups]})
+        if followups:
+            extra = self._search(followups)
+            if extra:
+                evidence = self._pool(raw + extra, plan, facts)
+                try:
+                    parts = self._write(question, evidence, plan, facts)
+                except Exception as e:  # noqa: BLE001 - keep the round-1 brief
+                    t("followup.error", {"error": str(e)[:160]})
+                    evidence = self._pool(raw, plan, facts)
+            t("followup.done", {"new_results": len(extra), "evidence": len(evidence)})
 
         return Brief(
-            question=question, verdict=verdict, claims=claims, contradictions=contradictions,
-            open_questions=open_q, evidence=evidence, registry_facts=facts, plan=plan,
+            question=question, evidence=evidence, registry_facts=facts, plan=plan,
+            gaps=gaps, followups=followups,
             searches_used=self.searcher.stats.live_calls, cache_hits=self.searcher.stats.cache_hits,
-            dropped_claims=dropped, pages_read=deep.pages_read,
-            claims_page_verified=deep.page_verified, claims_unconfirmed=deep.unconfirmed, unlinked_citations=len(support.unlinked), model=self.llm.used_model, generated_at=datetime.now(timezone.utc),
+            model=self.llm.used_model, generated_at=datetime.now(timezone.utc), **parts,
         )

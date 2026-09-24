@@ -56,6 +56,15 @@ def to_console(brief: Brief, console: Console) -> None:
             rows.append(body)
         console.print(Panel(Group(*rows), title="[b]Sources disagree[/b]", border_style="red"))
 
+    if brief.followups:
+        body = Text()
+        for g in brief.gaps:
+            body.append("gap  ", style="yellow"); body.append(g[:160] + "\n")
+        for f in brief.followups:
+            body.append(f"{f.engine.value:<14} ", style="magenta"); body.append(f.query + "\n")
+        console.print(Panel(body, title="[b]Round 2: gaps found in the draft, and the searches that followed[/b]",
+                            border_style="yellow"))
+
     ev = Table(title="Evidence", expand=True)
     ev.add_column("ID", width=4)
     ev.add_column("Type", width=16)
@@ -99,6 +108,9 @@ def to_markdown(brief: Brief) -> str:
                 lines.append(f"  - Resolution: {c.resolution}")
     if brief.open_questions:
         lines += ["", "## Open questions", ""] + [f"- {q}" for q in brief.open_questions]
+    if brief.followups:
+        lines += ["", "## Round 2", "", "Gaps the first draft left open:", ""] + [f"- {g}" for g in brief.gaps]
+        lines += ["", "Follow-up searches:", ""] + [f"- `{f.engine.value}` {f.query}" for f in brief.followups]
     lines += ["", "## Evidence", "", "| ID | Type | Via | Date | Source |", "|---|---|---|---|---|"]
     for e in brief.evidence:
         date = e.published.date().isoformat() if e.published else ""

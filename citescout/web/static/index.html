@@ -150,6 +150,10 @@ function render(b){
       c.positions.map(p=>`<li>${cites(p, urls)}</li>`).join("")}</ul>${c.resolution?`<div class="res">${esc(c.resolution)}</div>`:""}</div>`;
     h += `</div>`;
   }
+  if (b.followups && b.followups.length){
+    h += `<div class="card"><p class="kicker">Round 2 · gaps in the draft and the searches that followed</p><ul>${
+      b.gaps.map(g=>`<li>${esc(g)}</li>`).join("")}</ul><div>${b.followups.map(f=>`<div><span class="tag">${f.engine}</span> ${esc(f.query)}</div>`).join("")}</div></div>`;
+  }
   const used = new Set([...b.claims.flatMap(c=>c.citations), ...b.contradictions.flatMap(c=>c.citations)]);
   h += `<div class="card"><p class="kicker">Evidence</p><table><tr><th>ID</th><th>Type</th><th>Via</th><th>Date</th><th>Source</th></tr>`;
   for (const e of b.evidence.filter(e=>used.has(e.id))) h += `<tr><td style="font-family:'JetBrains Mono',monospace;font-size:12px">${e.id}</td><td><span class="tag">${e.source_type}</span></td>
@@ -178,6 +182,13 @@ $("#f").onsubmit = ev => {
   es.addEventListener("synthesize.retry", m => line(`<span class="muted">retry: ${esc(JSON.parse(m.data).reason)}</span>`));
   es.addEventListener("support.done", m => { const d = JSON.parse(m.data);
     line(`<span class="muted">unlinked ${d.unlinked} off-subject citation(s), ${d.dropped} claim(s) dropped</span>`); });
+  es.addEventListener("followup.plan", m => { const d = JSON.parse(m.data);
+    line(`<b class="busy">Round 2</b> · ${d.gaps.length} gap(s) in the draft`);
+    for (const g of d.gaps) line(`<span class="muted">gap</span> ${esc(g.slice(0,140))}`);
+    for (const s of d.searches) line(`<span class="eng">${s.engine}</span> ${esc(s.query)}<br><span class="muted">${esc(s.purpose)}</span>`); });
+  es.addEventListener("followup.done", m => { const d = JSON.parse(m.data);
+    line(`<span class="ok">✓</span> ${d.new_results} new result(s) · rewriting from ${d.evidence} sources`); });
+  es.addEventListener("followup.error", m => line(`<span class="muted">round 2 skipped: ${esc(JSON.parse(m.data).error)}</span>`));
   es.addEventListener("deepread.start", m => line(`<b class="busy">Reading cited pages in full</b>`));
   es.addEventListener("deepread.done", m => { const d = JSON.parse(m.data);
     line(`<span class="ok">✓</span> read ${d.pages} page(s) · ${d.verified} claim(s) verified on the page · <span class="${d.unconfirmed?'err':'muted'}">${d.unconfirmed} not found, confidence lowered</span>`); });
