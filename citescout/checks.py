@@ -66,9 +66,13 @@ def rule_contradictions(evidence: list[Evidence], facts: list[RegistryFact]) -> 
             reg_major = _norm(f.latest_version)[0]
             for e in web:
                 text = f"{e.title} {e.snippet}"
-                if name not in f"{text} {e.url}".lower():
-                    continue
-                ahead = [v for v in _VMAJOR_RE.findall(text) if int(v) > reg_major and int(v) - reg_major <= 2]
+                # Only trust version talk on the project's own repo pages, or "name v5" phrasing:
+                # a third-party issue saying "v2" is usually about some other package.
+                parts = e.url.lower().split("/")
+                first_party = e.domain == "github.com" and len(parts) > 4 and parts[4] == name
+                adjacent = re.findall(rf"{re.escape(name)}[\s@]*v(\d{{1,2}})\b", text, re.I)
+                candidates = _VMAJOR_RE.findall(text) if first_party else adjacent
+                ahead = [v for v in candidates if int(v) > reg_major and int(v) - reg_major <= 2]
                 if ahead:
                     out.append(Contradiction(
                         topic=f"Is {f.subject} v{ahead[0]} out?",

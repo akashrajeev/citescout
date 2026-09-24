@@ -77,3 +77,13 @@ def test_rule_flags_major_version_ahead_of_registry():
                         latest_release=now, evidence_id="E2")
     found = rule_contradictions(web + [reg], [fact])
     assert [c.topic for c in found] == ["Is date-fns v5 out?"]
+
+
+def test_version_ahead_rule_ignores_third_party_pages():
+    now = datetime.now(timezone.utc)
+    web = [ev(1, "https://github.com/PrefectHQ/fastmcp/issues/4278", title="fastmcp v2 breaks with httpx",
+              snippet="After upgrading to v2 our httpx client fails")]
+    reg = ev(2, "https://pypi.org/project/httpx/", engine=None, st=SourceType.PACKAGE_REGISTRY)
+    fact = RegistryFact(subject="httpx", source="pypi", url=reg.url, latest_version="0.28.1",
+                        latest_release=now, evidence_id="E2")
+    assert rule_contradictions(web + [reg], [fact]) == []
