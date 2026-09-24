@@ -5,6 +5,7 @@ Each step emits a trace event so the CLI and web UI can show the agent working.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -27,17 +28,43 @@ def _noop(_: str, __: dict[str, Any]) -> None:
     pass
 
 
+_TECH_CONTEXT = re.compile(
+    r"\b(python|pypi|pip|npm|node(?:\.js)?|javascript|typescript|js|package|module|"
+    r"framework|sdk|api|github|release|version|developer|code|open[- ]source|algorithm|index|benchmark|"
+    r"vector|dataset|model|paper)\b", re.I)
+
+
 def _relevant(evidence: list[Evidence], plan_subjects: list) -> list[Evidence]:
-    """Drop results that never mention any subject (e.g. library-news hits for 'requests')."""
-    names = set()
+    """Drop results that never mention any subject.
+
+    ("library" alone is not technical context: public libraries make the news too.)
+
+    Plain-word package names ("requests", "moment", "express") also need a technical context:
+    a Google News search for "Python requests library" still returns stories about book-ban
+    requests at public libraries. Pages on repos, registries, forums, docs sites and Scholar
+    count as technical context by themselves; news and general pages must say so in text.
+    """
+    from citescout.models import SourceType
+    from citescout.support import aliases
+
+    names: set[str] = set()
     for s in plan_subjects:
-        names.add(s.name.lower())
-        if s.repo:
-            names.add(s.repo.split("/")[-1].lower())
-    names = {n for n in names if len(n) >= 3}
+        names |= aliases(s)
     if not names:
         return evidence
-    return [e for e in evidence if any(n in f"{e.title} {e.snippet} {e.url}".lower() for n in names)]
+    tech_types = {SourceType.REPOSITORY, SourceType.PACKAGE_REGISTRY, SourceType.FORUM,
+                  SourceType.OFFICIAL_DOCS, SourceType.ACADEMIC, SourceType.ADVISORY}
+    kept = []
+    for e in evidence:
+        text = f"{e.title} {e.snippet} {e.url}".lower()
+        hits = [n for n in names if re.search(rf"(?<![a-z0-9]){re.escape(n)}(?![a-z0-9])", text)]
+        if not hits:
+            continue
+        plain_word_only = all(h.isalpha() for h in hits)
+        if plain_word_only and e.source_type not in tech_types and not _TECH_CONTEXT.search(f"{e.title} {e.snippet}"):
+            continue
+        kept.append(e)
+    return kept
 
 
 def _mark_official(evidence: list[Evidence], plan_subjects: list) -> None:
