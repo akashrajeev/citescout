@@ -39,6 +39,17 @@ def _relevant(evidence: list[Evidence], plan_subjects: list) -> list[Evidence]:
     return [e for e in evidence if any(n in f"{e.title} {e.snippet} {e.url}".lower() for n in names)]
 
 
+def _mark_official(evidence: list[Evidence], plan_subjects: list) -> None:
+    """A site named after the project (momentjs.com, docs.pydantic.dev) is its official site."""
+    from citescout.models import SourceType
+
+    names = {s.name.lower().replace(".", "").replace("-", "") for s in plan_subjects if len(s.name) >= 3}
+    for e in evidence:
+        host = e.domain.replace(".", "").replace("-", "")
+        if e.source_type in (SourceType.OTHER, SourceType.BLOG) and any(n in host for n in names):
+            e.source_type = SourceType.OFFICIAL_DOCS
+
+
 def _dedupe(evidence: list[Evidence]) -> list[Evidence]:
     """Same URL from two searches counts once; renumber ids so they stay E1..En."""
     seen: set[str] = set()
@@ -100,6 +111,7 @@ class ResearchAgent:
         kept = _relevant(raw, plan.subjects)
         if len(kept) < len(raw):
             t("filter.done", {"dropped": len(raw) - len(kept)})
+        _mark_official(kept, plan.subjects)
         evidence = _dedupe(kept)
         evidence += registry_evidence(facts, len(evidence) + 1)
         if not evidence:

@@ -94,7 +94,7 @@ class SerpSearcher:
         if search_fn is not None:
             self._search = search_fn
         else:
-            client = serpapi.Client(api_key=api_key, timeout=30) if api_key else None
+            client = serpapi.Client(api_key=api_key, timeout=60) if api_key else None
 
             def _live(params: dict[str, Any]) -> dict[str, Any]:
                 if client is None:
@@ -115,7 +115,14 @@ class SerpSearcher:
         if self.stats.live_calls >= self.max_searches:
             raise BudgetExceeded(f"search budget of {self.max_searches} reached")
         self.stats.live_calls += 1
-        data = _scrub(self._search(params))
+        try:
+            data = _scrub(self._search(params))
+        except Exception as exc:  # noqa: BLE001
+            if "timed out" not in str(exc).lower():
+                raise
+            # SerpApi keeps finishing a search after a client timeout and serves identical
+            # requests from its 1h cache for free, so one retry does not cost a new credit.
+            data = _scrub(self._search(params))
         if data.get("error"):
             raise RuntimeError(f"SerpApi error: {data['error']}")
         path.write_text(json.dumps({"params": params, "response": data}, indent=1))

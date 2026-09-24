@@ -27,7 +27,8 @@ Return JSON:
 }
 Rules:
 - Today is {today}.
-- 5 to 8 claims. Prefer claims backed by more than one independent source.
+- 5 to 8 claims, each saying something different. Never restate a claim in other words.
+- Prefer claims backed by more than one independent source.
 - Most claims must cite web evidence (rows where engine is not null): what the docs, release
   notes, issues, news and discussions actually say. The question is usually about more than
   version numbers - cover the substance (features, migration cost, known problems, who uses what).
