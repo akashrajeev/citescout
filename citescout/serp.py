@@ -109,7 +109,10 @@ class SerpSearcher:
         path = self.cache_dir / f"{_cache_key(params)}.json"
         if path.exists():
             self.stats.cache_hits += 1
-            return json.loads(path.read_text())
+            cached = json.loads(path.read_text())
+            if cached["response"].get("error"):
+                raise RuntimeError(f"SerpApi error: {cached['response']['error']}")
+            return cached
         if self.offline:
             raise FileNotFoundError(f"offline mode: no cached result for {params}")
         if self.stats.live_calls >= self.max_searches:
@@ -124,6 +127,10 @@ class SerpSearcher:
             # request finished server-side, this retry is normally free.
             data = _scrub(self._search(params))
         if data.get("error"):
+            # "Google hasn't returned any results" is a real (billed) answer: cache it so a
+            # re-run doesn't pay again for the same empty search. Other errors are not cached.
+            if "hasn't returned any results" in str(data["error"]):
+                path.write_text(json.dumps({"params": params, "response": data}, indent=1))
             raise RuntimeError(f"SerpApi error: {data['error']}")
         path.write_text(json.dumps({"params": params, "response": data}, indent=1))
         return {"params": params, "response": data}

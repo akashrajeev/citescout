@@ -69,3 +69,18 @@ def test_scholar_citation_counts_are_kept(tmp_path):
     ev = s.run(SearchTask(engine=Engine.GOOGLE_SCHOLAR, query="hnsw", purpose="p"), 1)
     assert ev[0].cited_by == 2412 and ev[0].source_type == SourceType.ACADEMIC
     assert ev[0].published.year == 2018 and "(cited by 2412)" in ev[0].snippet
+
+
+def test_empty_result_is_cached_so_reruns_are_free(tmp_path):
+    calls = []
+
+    def empty(params):
+        calls.append(params)
+        return {"error": "Google hasn't returned any results for this query."}
+
+    s = SerpSearcher("k", tmp_path, max_searches=5, search_fn=empty)
+    task = SearchTask(engine=Engine.GOOGLE, query="nothing here", purpose="p")
+    for _ in range(2):
+        with pytest.raises(RuntimeError, match="hasn't returned"):
+            s.run(task, 1)
+    assert len(calls) == 1 and s.stats.cache_hits == 1
