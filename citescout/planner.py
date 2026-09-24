@@ -75,8 +75,60 @@ def sanitize(raw: dict, question: str, max_searches: int) -> Plan:
             if repo and ("/" not in repo or repo.count("/") != 1):
                 repo = None
             subjects.append(Subject(name=str(sub["name"]).strip(), ecosystem=sub.get("ecosystem"), repo=repo))
-    return Plan(intent=str(raw.get("intent", "general")), subjects=subjects[:4],
+    plan = Plan(intent=str(raw.get("intent", "general")), subjects=subjects[:4],
                 searches=searches[:max_searches], rationale=str(raw.get("rationale", ""))[:500])
+    return enforce(plan, question)
+
+
+_RESEARCH_RE = __import__("re").compile(
+    r"\b(algorithms?|index(?:es)?|benchmarks?|papers?|research|nearest[- ]neighbou?r|ANN|architectures?|"
+    r"state[- ]of[- ]the[- ]art|SOTA|consensus|compression|embeddings?|quantization|transformers?|"
+    r"vector search|retrieval|complexity)\b", __import__("re").I)
+_YEAR_RE = __import__("re").compile(r"\b(?:19|20)\d{2}\b")
+
+
+def is_research_question(question: str) -> bool:
+    return bool(_RESEARCH_RE.search(question))
+
+
+def enforce(plan: Plan, question: str) -> Plan:
+    """Rules the prompt asks for, enforced in code (models ignore prompts sometimes):
+
+    - No stale years in queries. "benchmark 2025" in 2026 pins results to last year; the
+      year is removed and the search marked recent_only instead.
+    - Research questions (algorithms, indexes, benchmarks) get at least one Google Scholar
+      search. If the model planned none, the last general Google search becomes a Scholar
+      search built from the subjects and the research terms in the question.
+    """
+    from datetime import date
+
+    this_year = date.today().year
+    fixed: list[SearchTask] = []
+    for t in plan.searches:
+        years = [int(y) for y in _YEAR_RE.findall(t.query)]
+        if any(y < this_year for y in years):
+            q = " ".join(_YEAR_RE.sub(lambda m: "" if int(m.group(0)) < this_year else m.group(0), t.query).split())
+            t = t.model_copy(update={"query": q, "recent_only": True})
+        fixed.append(t)
+    if is_research_question(question) and not any(t.engine == Engine.GOOGLE_SCHOLAR for t in fixed):
+        general = [i for i, t in enumerate(fixed) if t.engine == Engine.GOOGLE and "site:" not in t.query]
+        if general:
+            from citescout.support import aliases
+
+            names = []
+            for s in plan.subjects:
+                short = min(aliases(s), key=len)
+                names.append(short)
+            terms = []
+            for m in _RESEARCH_RE.finditer(question):
+                w = m.group(0).lower()
+                if w not in terms and w not in {"index", "indexes", "research"}:
+                    terms.append(w)
+            query = " ".join(names + terms) or fixed[general[-1]].query
+            fixed[general[-1]] = SearchTask(engine=Engine.GOOGLE_SCHOLAR, query=query[:250], recent_only=True,
+                                            purpose="Peer-reviewed evidence and citation counts (added by code: "
+                                                    "research question with no Scholar search)")
+    return plan.model_copy(update={"searches": fixed})
 
 
 _SITE_PATH = __import__("re").compile(r"site:([\w.-]+)/(\S+)")

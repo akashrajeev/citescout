@@ -16,7 +16,7 @@ from citescout.checks import rule_contradictions, score_claims
 from citescout.config import Settings
 from citescout.llm import LLM
 from citescout.models import Brief, Evidence, Plan, SearchTask
-from citescout.planner import make_plan
+from citescout.planner import enforce, make_plan
 from citescout.serp import SerpSearcher
 from citescout.support import check_support
 from citescout.synthesize import registry_evidence, synthesize, validate
@@ -128,7 +128,7 @@ class ResearchAgent:
         if path.exists() and not self.replan:
             plan = Plan.model_validate_json(path.read_text())
             if len(plan.searches) <= self.settings.max_searches:
-                return plan
+                return enforce(plan, question)
         plan = make_plan(self.llm, question, self.settings.max_searches)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(plan.model_dump_json(indent=1))
