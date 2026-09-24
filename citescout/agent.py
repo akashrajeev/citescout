@@ -17,6 +17,7 @@ from citescout.llm import LLM
 from citescout.models import Brief, Evidence, Plan, SearchTask
 from citescout.planner import make_plan
 from citescout.serp import SerpSearcher
+from citescout.support import check_support
 from citescout.synthesize import registry_evidence, synthesize, validate
 
 Trace = Callable[[str, dict[str, Any]], None]
@@ -146,6 +147,10 @@ class ResearchAgent:
                      "4 claims cite web evidence rows (engine not null).")
             verdict, claims, contradictions, open_q, dropped = validate(
                 synthesize(self.llm, question, evidence, nudge), evidence)
+        claims, support = check_support(claims, evidence, plan.subjects)
+        dropped += len(support.dropped)
+        if support.unlinked:
+            t("support.done", {"unlinked": len(support.unlinked), "dropped": len(support.dropped)})
         for c in contradictions:
             c.detected_by = "model"
         rules = rule_contradictions(evidence, facts)
@@ -158,5 +163,5 @@ class ResearchAgent:
             question=question, verdict=verdict, claims=claims, contradictions=contradictions,
             open_questions=open_q, evidence=evidence, registry_facts=facts, plan=plan,
             searches_used=self.searcher.stats.live_calls, cache_hits=self.searcher.stats.cache_hits,
-            dropped_claims=dropped, model=self.llm.used_model, generated_at=datetime.now(timezone.utc),
+            dropped_claims=dropped, unlinked_citations=len(support.unlinked), model=self.llm.used_model, generated_at=datetime.now(timezone.utc),
         )

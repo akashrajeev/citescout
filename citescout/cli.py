@@ -44,9 +44,12 @@ def _trace(event: str, data: dict) -> None:
         console.print(f"[bold]Cross-checking[/bold] {data['evidence']} sources...")
     elif event == "synthesize.retry":
         console.print(f"  [yellow]retrying synthesis:[/yellow] {data['reason']}")
+    elif event == "support.done":
+        console.print(f"  [yellow]unlinked {data['unlinked']} citation(s)[/yellow] whose source never discusses "
+                      f"the claim's subject; {data['dropped']} claim(s) left unsupported and dropped")
     elif event == "synthesize.done":
         console.print(f"  {data['claims']} claims, {data['contradictions']} disagreement(s), "
-                      f"{data['dropped']} uncited claim(s) dropped\n")
+                      f"{data['dropped']} unsupported claim(s) dropped\n")
 
 
 def main(argv: list[str] | None = None) -> int:

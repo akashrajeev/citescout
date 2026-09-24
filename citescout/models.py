@@ -122,5 +122,6 @@ class Brief(BaseModel):
     searches_used: int = 0
     cache_hits: int = 0
     dropped_claims: int = 0
+    unlinked_citations: int = 0  # real ids removed because the source never discusses the claim's subject
     model: str | None = None
     generated_at: datetime
