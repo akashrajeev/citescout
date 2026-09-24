@@ -89,3 +89,17 @@ def test_comma_thousands_next_to_a_date():
            st=SourceType.PACKAGE_REGISTRY)
     c = Claim(text="httpx had 143,868,864 downloads in the last week", citations=["E25"])
     assert check_claim(c, {"E25": r}, {})[0] == "page"
+
+
+def test_rechecking_a_saved_brief_does_not_lower_twice(tmp_path):
+    e = ev(1, "https://b.example/p", "Moment bundle size", "")
+    c = Claim(text="Moment.js adds 290 KB to a bundle.", citations=["E1"], confidence=Confidence.HIGH)
+    store = PageStore(tmp_path, offline=True)
+    path = store._path(e.url)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("Moment is big; consider smaller date libraries.")
+    deep_verify([c], [e], store)
+    first = (c.confidence, c.confidence_reason)
+    deep_verify([c], [e], store)
+    assert (c.confidence, c.confidence_reason) == first
+    assert c.confidence_reason.count("lowered:") == 1

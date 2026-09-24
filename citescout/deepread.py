@@ -219,6 +219,8 @@ def deep_verify(claims: list[Claim], evidence: list[Evidence], store: PageStore,
             report.page_verified += 1
         elif status == "unconfirmed":
             report.unconfirmed += 1
-            c.confidence = _DOWN[c.confidence]
-            c.confidence_reason += f"; lowered: {detail}"
+            note = f"; lowered: {detail}"
+            if note not in c.confidence_reason:  # re-checking a saved brief must not lower it twice
+                c.confidence = _DOWN[c.confidence]
+                c.confidence_reason += note
     return report
