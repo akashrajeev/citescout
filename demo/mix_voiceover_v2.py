@@ -20,13 +20,13 @@ def dur(f):
 
 run("-i", "v2-seg1.mp4", "-i", "v2-seg2.mp4", "-filter_complex", "[0:v]fps=25[a];[1:v]fps=25[b];[a][b]concat=n=2:v=1[v]",
     "-map", "[v]", "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "vo2/silent.mp4")
-beats = [float(l.split("\t")[0]) for l in open("beats.txt") if not l.strip().endswith("end")]
+beats = [float(l.split("\t")[0]) for l in open("beats.txt") if l.split("\t")[1].strip() not in ("end", "export")]  # line 12 covers evidence + export
 s1 = dur("v2-seg1.mp4")
 cuts = [0.0] + beats[1:] + [s1, s1 + float(sys.argv[1]), dur("vo2/silent.mp4")]
 n = len(cuts) - 1
 lines = [f"../../vo/cs2-vo-line{i}.wav" for i in range(1, n + 1)]
-assert all(os.path.exists(l) for l in lines), f"need {n} lines"
 os.chdir("vo2")
+assert all(os.path.exists(l) for l in lines), f"need {n} lines"
 wav = []
 for i, l in enumerate(lines, 1):
     run("-i", l, "-ac", "1", "-ar", "48000", "-c:a", "pcm_s16le", f"n{i}.wav")
