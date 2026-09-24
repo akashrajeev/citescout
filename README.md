@@ -6,6 +6,8 @@ Ask it things like *"Is the Python requests library still maintained, or should 
 
 Built for the [SerpApi India Hackathon 2026](https://serpapi.github.io/serpapi-india-hackathon-2026/), AI Agents track.
 
+**Demo video (1:52):** https://youtu.be/7EF9pnAYh-I - a live run of the requests-vs-httpx question in the web UI, then the CLI budget check and the test suite.
+
 ---
 
 ## Why
@@ -174,7 +176,7 @@ examples/         real briefs produced by citescout
 
 ## AI tools used
 
-Per the hackathon rules: this project was built with AI assistance. The code, tests and documentation were written with an AI coding agent working under my direction, and I reviewed and ran the results. At runtime, citescout itself uses an LLM (by default `openai/gpt-oss-120b` served by Groq) for search planning and for writing the brief. Citation checks, confidence scoring and the contradiction rules are plain code.
+Per the hackathon rules: this project was built with AI assistance. The code, tests and documentation were written with an AI coding agent working under my direction, and I reviewed and ran the results. At runtime, citescout itself uses an LLM (by default `openai/gpt-oss-120b` served by Groq) for search planning and for writing the brief. Citation checks, confidence scoring and the contradiction rules are plain code. The demo video's voiceover is AI text-to-speech (lines in `demo/vo/`, mixed with `demo/mix_voiceover.py`).
 
 ## License
 

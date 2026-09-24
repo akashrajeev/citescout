@@ -1,0 +1,25 @@
+citescout demo voiceover script (video: citescout-demo.mp4, 53.1s total)
+Format: [target window] line to speak. One line per beat, in order.
+Timings match the current cut; retime WAVs as needed when mixing.
+
+[0:00.0 - 0:05.0] This is citescout, a research agent for developers. Every claim it makes is cited, and every disagreement between sources gets flagged.
+
+[0:05.0 - 0:09.0] It runs locally. Let's ask a real question: is the requests library still maintained, or should I switch to httpx?
+
+[0:09.0 - 0:13.5] First, the model plans the research: six searches across SerpApi's Google and Google News engines, each with its own purpose.
+
+[0:13.5 - 0:18.0] SerpApi runs the searches, while live PyPI and GitHub APIs verify versions and activity. Then the agent cross-checks twenty-two sources.
+
+[0:18.0 - 0:23.0] The verdict comes back with inline citations. Every marker opens the exact source the claim came from.
+
+[0:23.0 - 0:28.5] Each claim gets a confidence level, computed in code from independent domains, source type, freshness, and live registry data.
+
+[0:28.5 - 0:33.5] When sources disagree, citescout surfaces the conflict instead of hiding it, and says which side the evidence favours.
+
+[0:33.5 - 0:38.5] The evidence table lists every source, typed, with the engine that found it. This run: six live SerpApi searches, twenty-two sources.
+
+[0:38.5 - 0:41.0] Credit usage is shown too, and cached re-runs cost zero.
+
+[0:41.0 - 0:46.0] The same agent works from the command line, with budget tracking against the SerpApi free plan.
+
+[0:46.0 - 0:52.5] And the test suite passes. That's citescout: plan, search, verify, cite.
