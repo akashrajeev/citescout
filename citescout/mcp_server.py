@@ -42,6 +42,7 @@ def brief_payload(brief: Brief) -> dict[str, Any]:
                       "published": e.published.date().isoformat() if e.published else None,
                       "cited_by": e.cited_by} for e in brief.evidence if e.id in cited],
         "open_questions": brief.open_questions,
+        "comparison": brief.comparison.model_dump() if brief.comparison else None,
         "round2": {"gaps": brief.gaps, "followup_searches": [f.query for f in brief.followups]},
         "checks": {"unsupported_claims_dropped": brief.dropped_claims,
                    "off_subject_citations_unlinked": brief.unlinked_citations,

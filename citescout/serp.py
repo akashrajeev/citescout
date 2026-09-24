@@ -52,6 +52,8 @@ def _params_for(task: SearchTask) -> dict[str, Any]:
         if task.recent_only:
             params["as_ylo"] = datetime.now().year - 2
         return params
+    if task.engine == Engine.GOOGLE_TRENDS:
+        return {"engine": "google_trends", "q": task.query, "data_type": "TIMESERIES", "date": "today 12-m"}
     raise ValueError(f"Unsupported engine {task.engine}")
 
 

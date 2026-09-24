@@ -136,6 +136,15 @@ function cites(text, urls){
   return esc(text).replace(/\[(E\d+(?:,\s*E\d+)*)\]/g, (_, ids) =>
     ids.split(/,\s*/).map(i => urls[i] ? `<a class="cite" href="${esc(urls[i])}" target="_blank" title="${esc(urls[i])}">${i}</a>` : "").join(""));
 }
+function trendChart(t){
+  const W = 640, H = 140, P = 8, colors = ["#2f6f4f", "#b5651d", "#3b5ba5", "#8a3b8f", "#6b6b6b"];
+  const n = t.dates.length; if (n < 2) return "";
+  const x = i => P + i * (W - 2*P) / (n - 1), y = v => H - P - v * (H - 2*P) / 100;
+  const lines = t.values.map((vals, k) => `<polyline fill="none" stroke="${colors[k % 5]}" stroke-width="2" points="${vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ")}"/>`).join("");
+  const legend = t.terms.map((term, k) => `<span style="color:${colors[k % 5]};margin-right:14px">■ ${esc(term)}</span>`).join("");
+  return `<p class="kicker" style="margin-top:14px">Google Trends via SerpApi · search interest, past 12 months · <a href="${esc(t.url)}" target="_blank">open</a></p>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;background:#fafaf7;border-radius:6px">${lines}</svg><div style="font-size:12.5px">${legend}</div>`;
+}
 function render(b){
   const urls = Object.fromEntries(b.evidence.map(e => [e.id, e.url]));
   let h = `<div class="card"><p class="kicker">Verdict</p><div id="verdict">${cites(b.verdict, urls)}</div></div>`;
@@ -144,6 +153,12 @@ function render(b){
      <td>${esc(c.text)}</td><td>${c.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank" title="${esc(urls[i])}">${i}</a>`).join(" ")}</td>
      <td><span class="read ${c.verification||'none'}" title="${esc(c.verification_detail||'')}">${({page:"✓ page",snippet:"~ snippet",unconfirmed:"✗ not found"})[c.verification]||"-"}</span></td></tr>`;
   h += `</table></div>`;
+  if (b.comparison){
+    const cm = b.comparison;
+    h += `<div class="card"><p class="kicker">Side by side · primary data, computed in code</p><table><tr><th>Metric</th>${cm.subjects.map(n=>`<th>${esc(n)}</th>`).join("")}<th>Source</th></tr>`;
+    for (const r of cm.rows) h += `<tr><td>${esc(r.metric)}</td>${r.values.map(v=>`<td style="font-family:'JetBrains Mono',monospace;font-size:12.5px">${esc(v)}</td>`).join("")}<td>${r.citations.map(i=>`<a class="cite" href="${esc(urls[i])}" target="_blank">${i}</a>`).join(" ")}</td></tr>`;
+    h += `</table>${b.trends ? trendChart(b.trends) : ""}</div>`;
+  }
   if (b.contradictions.length){
     h += `<div class="card disagree"><p class="kicker" style="color:var(--weak)">Sources disagree</p>`;
     for (const c of b.contradictions) h += `<div><b>${esc(c.topic)}</b> <span class="tag">${c.detected_by}</span><ul>${

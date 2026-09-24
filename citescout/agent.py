@@ -11,13 +11,13 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from typing import Any
 
-from citescout import registry
+from citescout import compare, registry
 from citescout.checks import rule_contradictions, score_claims
 from citescout.config import Settings
 from citescout.deepread import PageStore, deep_verify
 from citescout.followup import find_gaps, plan_followups
 from citescout.llm import LLM
-from citescout.models import Brief, Evidence, Plan, SearchTask
+from citescout.models import Brief, Engine, Evidence, Plan, SearchTask
 from citescout.planner import enforce, make_plan
 from citescout.serp import SerpSearcher
 from citescout.support import check_support
@@ -119,6 +119,7 @@ class ResearchAgent:
         self.searcher = searcher or SerpSearcher(settings.require_serpapi() or None, settings.cache_dir,
                                                  settings.max_searches + settings.followups, settings.offline)
         self.trace = trace or _noop
+        self._trends = None
 
     def _plan(self, question: str) -> Plan:
         """Reuse the saved plan for a question we've seen, so a re-run hits the SerpApi cache
@@ -169,7 +170,24 @@ class ResearchAgent:
             self.trace("filter.done", {"dropped": len(raw) - len(kept)})
         _mark_official(kept, plan.subjects)
         evidence = _dedupe(kept)
-        return evidence + registry_evidence(facts, len(evidence) + 1)
+        evidence += registry_evidence(facts, len(evidence) + 1)
+        if self._trends is not None:
+            evidence.append(compare.trends_evidence(self._trends, f"E{len(evidence) + 1}"))
+        return evidence
+
+    def _fetch_trends(self, plan: Plan, question: str) -> None:
+        self._trends = None
+        if not compare.wants_comparison(plan, question):
+            return
+        task = compare.trends_task(plan.subjects)
+        try:
+            self._trends = compare.parse_trends(task, self.searcher.raw(task)["response"])
+            err = None if self._trends else "no Trends data"
+        except Exception as e:  # noqa: BLE001 - the comparison table still works without Trends
+            err = f"{type(e).__name__}: {e}"[:160]
+        self.trace("search.done", {"engine": task.engine.value, "query": task.query,
+                                   "results": len(self._trends.dates) if self._trends else 0,
+                                   "error": err, "followup": False})
 
     def _write(self, question: str, evidence: list[Evidence], plan: Plan, facts: list) -> dict[str, Any]:
         """Synthesize and run every check. Returns the pieces of a brief."""
@@ -213,6 +231,7 @@ class ResearchAgent:
         raw = self._search(plan.searches)
         facts = registry.verify(plan.subjects) if plan.subjects else []
         t("verify.done", {"facts": [f.model_dump(mode="json") for f in facts]})
+        self._fetch_trends(plan, question)
         evidence = self._pool(raw, plan, facts)
         if not evidence:
             raise RuntimeError("No evidence retrieved; check the SerpApi key, budget, or network.")
@@ -243,8 +262,11 @@ class ResearchAgent:
                     evidence = self._pool(raw, plan, facts)
             t("followup.done", {"new_results": len(extra), "evidence": len(evidence)})
 
+        trends_id = next((e.id for e in evidence if e.engine == Engine.GOOGLE_TRENDS), None)
+        comparison = (compare.build(plan.subjects, facts, self._trends, trends_id)
+                      if compare.wants_comparison(plan, question) else None)
         return Brief(
-            question=question, evidence=evidence, registry_facts=facts, plan=plan,
+            question=question, evidence=evidence, comparison=comparison, trends=self._trends, registry_facts=facts, plan=plan,
             gaps=gaps, followups=followups,
             searches_used=self.searcher.stats.live_calls, cache_hits=self.searcher.stats.cache_hits,
             model=self.llm.used_model, generated_at=datetime.now(timezone.utc), **parts,

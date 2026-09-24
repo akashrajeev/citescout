@@ -19,6 +19,7 @@ class Engine(str, Enum):
     GOOGLE = "google"
     GOOGLE_NEWS = "google_news"
     GOOGLE_SCHOLAR = "google_scholar"
+    GOOGLE_TRENDS = "google_trends"  # added by code in comparison mode, never planned by the model
 
 
 class SourceType(str, Enum):
@@ -116,6 +117,26 @@ class Contradiction(BaseModel):
     resolution: str | None = None
 
 
+class TrendSeries(BaseModel):
+    """Google Trends interest over time (SerpApi google_trends, TIMESERIES, past 12 months)."""
+
+    terms: list[str]
+    dates: list[str]
+    values: list[list[int]]   # one series per term, 0-100 relative interest
+    url: str
+
+
+class CompareRow(BaseModel):
+    metric: str
+    values: list[str]          # one cell per subject, in Comparison.subjects order
+    citations: list[str] = Field(default_factory=list)
+
+
+class Comparison(BaseModel):
+    subjects: list[str]
+    rows: list[CompareRow]
+
+
 class Brief(BaseModel):
     question: str
     verdict: str
@@ -125,6 +146,8 @@ class Brief(BaseModel):
     evidence: list[Evidence]
     registry_facts: list[RegistryFact] = Field(default_factory=list)
     plan: Plan
+    comparison: Comparison | None = None
+    trends: TrendSeries | None = None
     gaps: list[str] = Field(default_factory=list)            # weak spots found in the first draft
     followups: list[SearchTask] = Field(default_factory=list)  # round-2 searches aimed at those gaps
     searches_used: int = 0

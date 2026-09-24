@@ -72,6 +72,8 @@ def sanitize_followups(raw: dict, done: list[SearchTask], n: int, question: str)
             engine = Engine(str(s.get("engine", "google")).strip())
         except ValueError:
             engine = Engine.GOOGLE
+        if engine == Engine.GOOGLE_TRENDS:
+            engine = Engine.GOOGLE
         query = _fix_site(" ".join(str(s.get("query", "")).split()))
         recent = bool(s.get("recent_only", False))
         if any(int(y) < this_year for y in _YEAR_RE.findall(query)):

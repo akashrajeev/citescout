@@ -44,6 +44,16 @@ def to_console(brief: Brief, console: Console) -> None:
                                                style=_READ_STYLE.get(c.verification or "", "dim")))
     console.print(t)
 
+    if brief.comparison:
+        ct = Table(title="Side by side (primary data, computed in code)", expand=True)
+        ct.add_column("Metric", ratio=1)
+        for name in brief.comparison.subjects:
+            ct.add_column(name, ratio=1)
+        ct.add_column("Source", width=10)
+        for r in brief.comparison.rows:
+            ct.add_row(r.metric, *r.values, ", ".join(r.citations))
+        console.print(ct)
+
     if brief.contradictions:
         rows = []
         for c in brief.contradictions:
@@ -99,6 +109,14 @@ def to_markdown(brief: Brief) -> str:
         cites = ", ".join(f"[{i}]({link[i]})" for i in c.citations)
         read = f" · {_READ_MARK[c.verification]} {c.verification_detail}" if c.verification in _READ_MARK else ""
         lines.append(f"- **{c.confidence.value}** - {md(c.text)} ({cites}) _{c.confidence_reason}{read}_")
+    if brief.comparison:
+        cmp_ = brief.comparison
+        lines += ["", "## Side by side", "", "_Primary data (PyPI / npm / GitHub / OSV.dev / Google Trends), computed in code._", "",
+                  "| Metric | " + " | ".join(cmp_.subjects) + " | Source |",
+                  "|---|" + "---|" * len(cmp_.subjects) + "---|"]
+        for r in cmp_.rows:
+            src = ", ".join(f"[{i}]({link[i]})" for i in r.citations if i in link)
+            lines.append(f"| {r.metric} | " + " | ".join(r.values) + f" | {src} |")
     if brief.contradictions:
         lines += ["", "## Sources disagree", ""]
         for c in brief.contradictions:

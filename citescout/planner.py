@@ -56,6 +56,8 @@ def sanitize(raw: dict, question: str, max_searches: int) -> Plan:
             engine = Engine(str(s.get("engine", "google")).strip())
         except ValueError:
             engine = Engine.GOOGLE
+        if engine == Engine.GOOGLE_TRENDS:  # code adds Trends in comparison mode; the model may not
+            engine = Engine.GOOGLE
         query = _fix_site(" ".join(str(s.get("query", "")).split()))
         if not query:
             continue

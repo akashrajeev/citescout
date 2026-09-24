@@ -25,7 +25,7 @@ from pathlib import Path
 
 import httpx
 
-from citescout.models import Claim, Confidence, Evidence
+from citescout.models import Claim, Confidence, Engine, Evidence
 
 _UA = {"User-Agent": "Mozilla/5.0 (compatible; citescout/0.2; +https://github.com/akashrajeev/citescout)"}
 _MAX_BYTES = 2_000_000
@@ -168,7 +168,7 @@ def check_claim(claim: Claim, by_id: dict[str, Evidence], pages: dict[str, str |
             continue
         ids.append(cid)
         head = _norm(f"{e.title} {e.snippet} {e.source_name or ''}")
-        if e.engine is None:
+        if e.engine is None or e.engine == Engine.GOOGLE_TRENDS:  # structured API data, no page to read
             strong.append(head)
             continue
         api_only = False
@@ -203,7 +203,7 @@ def deep_verify(claims: list[Claim], evidence: list[Evidence], store: PageStore,
     for c in claims:
         for cid in c.citations:
             e = by_id.get(cid)
-            if e is not None and e.engine is not None:
+            if e is not None and e.engine not in (None, Engine.GOOGLE_TRENDS):
                 counts[e.url] = counts.get(e.url, 0) + 1
     urls = sorted(counts, key=lambda u: -counts[u])[:max_pages]
     pages = store.fetch_all(urls) if urls else {}
