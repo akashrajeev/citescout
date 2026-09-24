@@ -1,0 +1,17 @@
+citescout demo v2 voiceover script (round-2 features). Voice: Algieba, same delivery as cs-vo-line*.
+One line per beat, in order. Files: cs2-vo-line1..14.wav. The mix holds frames so every line plays at 1.0x.
+
+1  [intro]     This is citescout: a research agent for developers that is not allowed to show you an unsourced claim.
+2  [ask]       It runs locally. Let's ask a real question: is requests still maintained, or should I switch to httpx?
+3  [plan]      The model plans searches across SerpApi's Google, Google News and Google Trends engines.
+4  [verify]    Live PyPI, GitHub, download counts and OSV security advisories check the facts.
+5  [round2]    Then a second round: code lists what the first draft couldn't settle, and the agent runs targeted follow-up searches.
+6  [verdict]   The verdict comes back with inline citations. Every marker opens the exact source.
+7  [deepread]  Deep-read checks every version, number and date in a claim against the full cited page, or a live API record. Claims it can't back lose confidence.
+8  [compare]   For comparisons, a side-by-side table is built in code from primary data only. Every cell cites its record.
+9  [trends]    Search interest over the past year comes from SerpApi's Google Trends engine.
+10 [disagree]  Where sources disagree, citescout says so, and which side the evidence favours.
+11 [gaps]      Here are the gaps from the first draft, and the follow-up searches they turned into.
+12 [evidence]  Every source is typed, with the engine that found it. And the brief exports as Markdown or JSON.
+13 [terminal]  From the terminal: credits left, and the eval. Nineteen of twenty-two claims verified on the full page, and every planted wrong fact caught.
+14 [tests]     And all sixty-one tests pass. That's citescout: plan, search, verify, cite.
