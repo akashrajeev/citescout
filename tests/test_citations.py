@@ -66,3 +66,14 @@ def test_api_deprecation_talk_is_not_a_dead_project_claim():
     reg = ev(2, "https://pypi.org/project/pydantic/", engine=None, st=SourceType.PACKAGE_REGISTRY)
     fact = RegistryFact(subject="pydantic", source="pypi", url=reg.url, latest_release=now, evidence_id="E2")
     assert rule_contradictions(web + [reg], [fact]) == []
+
+
+def test_rule_flags_major_version_ahead_of_registry():
+    now = datetime.now(timezone.utc)
+    web = [ev(1, "https://github.com/date-fns/date-fns/releases", title="Releases · date-fns/date-fns",
+              snippet="v5 focuses on reducing the date-fns package size. Compared to v4.3.0 ...")]
+    reg = ev(2, "https://www.npmjs.com/package/date-fns", engine=None, st=SourceType.PACKAGE_REGISTRY)
+    fact = RegistryFact(subject="date-fns", source="npm", url=reg.url, latest_version="4.4.0",
+                        latest_release=now, evidence_id="E2")
+    found = rule_contradictions(web + [reg], [fact])
+    assert [c.topic for c in found] == ["Is date-fns v5 out?"]

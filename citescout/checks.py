@@ -16,6 +16,7 @@ from citescout.classify import SOURCE_WEIGHT
 from citescout.models import Claim, Confidence, Contradiction, Evidence, RegistryFact
 
 _VERSION_RE = re.compile(r"\b(?:v|version\s*)?(\d+\.\d+(?:\.\d+)?)\b", re.I)
+_VMAJOR_RE = re.compile(r"\bv(\d{1,2})(?:\.\d+)*\b")
 _LATEST_RE = re.compile(r"(latest|newest|current|new)\s+(stable\s+)?(version|release)", re.I)
 # "deprecated" alone is too broad ("too much deprecation", "deprecated APIs"), so only
 # phrasings that describe the whole project count.
@@ -59,6 +60,25 @@ def rule_contradictions(evidence: list[Evidence], facts: list[RegistryFact]) -> 
                     citations=[e.id, f.evidence_id], detected_by="rule",
                     resolution=f"The {f.source} record is authoritative; the page is likely out of date.",
                 ))
+        # 1b) pages that mention a newer major version than the registry's default release
+        #     (usually a pre-release / "next" tag, sometimes just wrong)
+        if f.latest_version and _norm(f.latest_version):
+            reg_major = _norm(f.latest_version)[0]
+            for e in web:
+                text = f"{e.title} {e.snippet}"
+                if name not in f"{text} {e.url}".lower():
+                    continue
+                ahead = [v for v in _VMAJOR_RE.findall(text) if int(v) > reg_major and int(v) - reg_major <= 2]
+                if ahead:
+                    out.append(Contradiction(
+                        topic=f"Is {f.subject} v{ahead[0]} out?",
+                        positions=[f"{e.domain} mentions v{ahead[0]} [{e.id}]",
+                                   f"{f.source} still marks {f.latest_version} as the latest release [{f.evidence_id}]"],
+                        citations=[e.id, f.evidence_id], detected_by="rule",
+                        resolution=(f"v{ahead[0]} is probably a pre-release or not yet the default install; "
+                                    f"a plain install gives {f.latest_version}."),
+                    ))
+                    break
         # 2) "dead project" claims vs recent activity
         recent = [d for d in (f.latest_release, f.last_push) if d]
         active = bool(recent) and max(recent) > now - timedelta(days=183)
